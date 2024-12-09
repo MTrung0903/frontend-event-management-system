@@ -19,7 +19,7 @@ const SponsorshipTabs = () => {
                 const response = await fetch("http://localhost:8080/man/sponsorship", {
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`, // Token authorization
+                        Authorization: localStorage.getItem("token"),
 
                     },
                 });
@@ -94,10 +94,10 @@ const SponsorshipTabs = () => {
                             {activeTab === index && (
                                 <>
                                     <Typography variant="h6" gutterBottom>
-                                        Benefit: {sponsorship.benefit}
+                                        Lợi ích: {sponsorship.benefit}
                                     </Typography>
                                     <Box
-                                        height="300px"
+                                        height="500px"
                                         sx={{
                                             "& .MuiDataGrid-root": {
                                                 border: "none",

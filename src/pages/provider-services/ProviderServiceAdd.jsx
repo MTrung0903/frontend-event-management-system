@@ -1,22 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 import axios from "axios";
-import { useParams } from "react-router-dom"; // Để lấy providerId từ URL
 
-const ServiceAddForm = () => {
+
+const ServiceAddForm = ({onClose,providerid,handleFetch}) => {
+  const providerId = providerid;
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  const { providerId } = useParams(); // Lấy providerId từ URL
-
+  
+  console.log("ID"+providerId)
   const handleFormSubmit = async (values, { resetForm }) => {
     try {
-      // Chuẩn bị dữ liệu gửi đi đúng định dạng DTO
+      
       const serviceDTO = {
         ...values,
-        providerId: parseInt(providerId), // Lấy providerId từ URL
+        providerId
       };
 
       const response = await axios.post(
@@ -25,14 +26,16 @@ const ServiceAddForm = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`, // Thêm JWT token từ localStorage
+            Authorization: localStorage.getItem("token"),
           },
         }
       );
 
       alert("Service added successfully!");
       console.log("Response:", response.data);
-      resetForm(); // Reset form fields after successful submission
+      resetForm(); 
+      onClose();
+      handleFetch()
     } catch (error) {
       console.error("Error adding service:", error);
       alert("Failed to add service. Please try again.");
@@ -144,11 +147,11 @@ const ServiceAddForm = () => {
 };
 
 const validationSchema = yup.object().shape({
-  serviceType: yup.string().required("Service type is required"),
-  serviceName: yup.string().required("Service name is required"),
-  serviceDesc: yup.string().required("Service description is required"),
-  price: yup.string().required("Price is required"),
-  duration: yup.string().required("Duration is required"),
+  serviceType: yup.string().required("Loại dịch vụ không được để trống"),
+  serviceName: yup.string().required("Tên dịch vụ không được để trống"),
+  serviceDesc: yup.string().required("Chi tiết dịch vụ không được để trống"),
+  price: yup.string().required("Giá không được để trống"),
+  duration: yup.string().required("Thời gian sử dụng không được để trống"),
 });
 
 const initialValues = {

@@ -1,65 +1,140 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Card, CardMedia, CircularProgress } from '@mui/material';
+import { TextField, Button, Grid, Typography, Card, CardMedia, CircularProgress, IconButton } from '@mui/material';
 import axios from 'axios';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import { useNavigate } from "react-router-dom";
 
-const MCAdd = () => {
+const McAdd = ({ closeDialog ,fetchMcList }) => {
   const [mcName, setMcName] = useState('');
   const [email, setEmail] = useState('');
+  const [title, setTitle] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
+  const [imageName, setImageName] = useState('');
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const navigate = useNavigate();
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setImage(file);
-      setImagePreview(URL.createObjectURL(file)); // Tạo preview cho ảnh
+      setImageName(file.name);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!mcName || !email || !image) {
-      alert('Vui lòng điền đầy đủ thông tin');
+    if (!mcName || !email || !title || !phone || !address || !description || !image) {
+      alert('Vui lòng điền đầy đủ thông tin.');
       return;
     }
 
     const formData = new FormData();
     formData.append('mcName', mcName);
     formData.append('email', email);
-    formData.append('imageMc', image); // Đính kèm ảnh vào FormData
+    formData.append('title', title);
+    formData.append('phone', phone);
+    formData.append('address', address);
+    formData.append('description', description);
+    formData.append('imageMc', image);
 
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:8080/man/mc', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`,
+          Authorization: localStorage.getItem("token"),
         },
       });
-      alert('MC đã được thêm thành công');
-      // Reset form sau khi thêm thành công
-      setMcName('');
-      setEmail('');
-      setImage(null);
-      setImagePreview(null);
+      console.log('API Response:', response);
+      alert('Thêm MC thành công!');
+      closeDialog(); 
+      fetchMcList(); 
     } catch (error) {
       console.error('Lỗi khi thêm MC:', error);
-      alert('Đã xảy ra lỗi, vui lòng thử lại');
+      alert('Có lỗi xảy ra, vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
   };
 
+
   return (
-    <div style={{ padding: '20px' }}>
-      <Typography variant="h5" gutterBottom>
-        Thêm MC Mới
-      </Typography>
-      <Card style={{ padding: '20px' }}>
+    <>
+     
+      <Card style={{ padding: '30px', borderRadius: '15px', boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)' }}>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            {/* mcName */}
+          {imagePreview ? (
+            <div style={{ textAlign: 'left', marginBottom: '20px' }}>
+              <CardMedia
+                component="img"
+                image={imagePreview}
+                alt="MC Image Preview"
+                style={{
+                  width: '150px',
+                  height: '150px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                  margin: '0',
+                }}
+              />
+              <label htmlFor="image-upload">
+                <Button
+                  variant="contained"
+                  component="span"
+                  startIcon={<PersonAddOutlinedIcon />}
+                  style={{
+                    marginTop: '10px',
+                    backgroundColor: '#3f51b5',
+                    color: '#ffffff',
+                  }}
+                >
+                  Chọn Ảnh
+                </Button>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+                id="image-upload"
+              />
+              <Typography variant="body2" align="left" style={{ marginTop: '10px' }}>
+                {imageName}
+              </Typography>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'left', marginBottom: '20px' }}>
+              <label htmlFor="image-upload">
+                <Button
+                  variant="contained"
+                  component="span"
+                  startIcon={<PersonAddOutlinedIcon />}
+                  style={{
+                    marginTop: '10px',
+                    backgroundColor: '#3f51b5',
+                    color: '#ffffff',
+                  }}
+                >
+                  Chọn Ảnh
+                </Button>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+                id="image-upload"
+              />
+            </div>
+          )}
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Tên MC"
@@ -67,10 +142,9 @@ const MCAdd = () => {
                 fullWidth
                 value={mcName}
                 onChange={(e) => setMcName(e.target.value)}
+                style={{ backgroundColor: '#ffffff', borderRadius: '5px' }}
               />
             </Grid>
-
-            {/* Email */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Email"
@@ -79,50 +153,66 @@ const MCAdd = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                style={{ backgroundColor: '#ffffff', borderRadius: '5px' }}
               />
             </Grid>
-
-            {/* Ảnh đại diện */}
             <Grid item xs={12} sm={6}>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-                id="image-upload"
+              <TextField
+                label="Chức Danh"
+                variant="outlined"
+                fullWidth
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                style={{ backgroundColor: '#ffffff', borderRadius: '5px' }}
               />
-              <label htmlFor="image-upload">
-                <Button variant="contained" component="span" fullWidth>
-                  Chọn ảnh
-                </Button>
-              </label>
-              {imagePreview && (
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={imagePreview}
-                  alt="MC Image Preview"
-                />
-              )}
             </Grid>
-
-            {/* Nút submit */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Số Điện Thoại"
+                variant="outlined"
+                fullWidth
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                style={{ backgroundColor: '#ffffff', borderRadius: '5px' }}
+              />
+            </Grid>
             <Grid item xs={12}>
+              <TextField
+                label="Địa Chỉ"
+                variant="outlined"
+                fullWidth
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                style={{ backgroundColor: '#ffffff', borderRadius: '5px' }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Mô Tả"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                style={{ backgroundColor: '#ffffff', borderRadius: '5px' }}
+              />
+            </Grid>
+            <Grid item xs={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
-                fullWidth
                 disabled={loading}
+                style={{ backgroundColor: '#3f51b5', color: '#ffffff', borderRadius: '20px', padding: '8px 16px' }}
               >
-                {loading ? <CircularProgress size={24} /> : 'Thêm MC'}
+                {loading ? <CircularProgress size={24} style={{ color: '#ffffff' }} /> : 'Thêm MC'}
               </Button>
             </Grid>
           </Grid>
         </form>
       </Card>
-    </div>
+    </>
   );
 };
 
-export default MCAdd;
+export default McAdd;

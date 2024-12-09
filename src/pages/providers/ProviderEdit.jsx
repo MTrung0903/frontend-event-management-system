@@ -7,9 +7,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const EditProviderForm = () => {
+const EditProviderForm = ({onClose,providerid,handleFetch}) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
-  const { providerId } = useParams(); // Lấy providerId từ URL
+  const  providerId  = providerid 
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState(null); // State để lưu dữ liệu provider
 
@@ -20,7 +20,7 @@ const EditProviderForm = () => {
         const response = await axios.get(`http://localhost:8080/man/provider/${providerId}`,  {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`, // Thêm JWT token từ localStorage
+              Authorization: localStorage.getItem("token"),
             },
           });
  
@@ -49,32 +49,33 @@ const EditProviderForm = () => {
       const response = await axios.put(`http://localhost:8080/man/provider`, values, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`, // Thêm JWT token từ localStorage
+          Authorization: localStorage.getItem("token"),
         },
       });
-      alert("Provider updated successfully!");
+      alert("Cập nhật thành công!");
       console.log("Response:", response.data);
-      navigate("/providers"); // Quay lại trang danh sách provider sau khi cập nhật
+      onClose();
+      handleFetch();
     } catch (error) {
       console.error("Error updating provider:", error);
-      alert("Failed to update provider. Please try again.");
+      alert("Cập nhật thất bại. Thử lại sau");
     }
   };
 
   if (!initialValues) {
     // Hiển thị loading khi đang tải dữ liệu
-    return <div>Loading provider details...</div>;
+    return <div>Tải nhà cung cấp dịch vụ...</div>;
   }
 
   return (
     <Box m="20px">
-      <Header title="EDIT PROVIDER" subtitle="Edit Provider Details" />
+      <Header title="EDIT PROVIDER"  />
 
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
         validationSchema={validationSchema}
-        enableReinitialize // Kích hoạt cập nhật giá trị initialValues khi dữ liệu được tải xong
+        enableReinitialize 
       >
         {({
           values,
@@ -95,7 +96,7 @@ const EditProviderForm = () => {
             >
               <TextField
                 fullWidth
-                variant="filled"
+               
                 type="text"
                 label="Provider Name"
                 onBlur={handleBlur}
@@ -108,12 +109,13 @@ const EditProviderForm = () => {
               />
               <TextField
                 fullWidth
-                variant="filled"
+               
                 type="text"
                 label="Contact Person"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.contact}
+                
                 name="contact"
                 error={!!touched.contact && !!errors.contact}
                 helperText={touched.contact && errors.contact}
@@ -121,7 +123,7 @@ const EditProviderForm = () => {
               />
               <TextField
                 fullWidth
-                variant="filled"
+                
                 type="email"
                 label="Email"
                 onBlur={handleBlur}
@@ -134,7 +136,7 @@ const EditProviderForm = () => {
               />
               <TextField
                 fullWidth
-                variant="filled"
+           
                 type="text"
                 label="Phone"
                 onBlur={handleBlur}
@@ -147,7 +149,7 @@ const EditProviderForm = () => {
               />
               <TextField
                 fullWidth
-                variant="filled"
+              
                 type="text"
                 label="Address"
                 onBlur={handleBlur}
@@ -160,7 +162,7 @@ const EditProviderForm = () => {
               />
               <TextField
                 fullWidth
-                variant="filled"
+             
                 type="text"
                 label="Website"
                 onBlur={handleBlur}
@@ -174,7 +176,7 @@ const EditProviderForm = () => {
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Update Provider
+                Cập nhật nhà cung cấp dịch vụ
               </Button>
             </Box>
           </form>
@@ -188,15 +190,15 @@ const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required("Provider name is required"),
-  contact: yup.string().required("Contact person is required"),
-  email: yup.string().email("Invalid email").required("Email is required"),
+  name: yup.string().required("Tên không được trống"),
+  contact: yup.string().required("Người liên hệ không được để trống"),
+  email: yup.string().email("Email không hợp lệ").required("Email không được để trống"),
   phone: yup
     .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("Phone is required"),
-  address: yup.string().required("Address is required"),
-  website: yup.string().url("Invalid URL").required("Website is required"),
+    .matches(phoneRegExp, "SĐT không hợp lệ")
+    .required("SĐT không được để trống"),
+  address: yup.string().required("Địa chỉ không được để trống"),
+  website: yup.string().url("URL không hợp lệ").required("Website không được để trống"),
 });
 
 export default EditProviderForm;

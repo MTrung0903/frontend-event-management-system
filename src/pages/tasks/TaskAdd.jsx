@@ -65,16 +65,16 @@ const TaskAdd = () => {
           />
 
           <FormControl fullWidth margin="normal">
-            <InputLabel>Priority</InputLabel>
+            <InputLabel>Mức độ ưu tiên</InputLabel>
             <Select
               name="priority"
               value={task.priority}
               onChange={handleChange}
               required
             >
-              <MenuItem value="high">High</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="low">Low</MenuItem>
+              <MenuItem value="high">Cao</MenuItem>
+              <MenuItem value="medium">Trung bình</MenuItem>
+              <MenuItem value="low">Thấp</MenuItem>
             </Select>
           </FormControl>
 
@@ -101,7 +101,7 @@ const TaskAdd = () => {
           />
 
           <FormControl fullWidth margin="normal">
-            <InputLabel>Status</InputLabel>
+            <InputLabel>Trạng thái</InputLabel>
             <Select
               name="status"
               value={task.status}

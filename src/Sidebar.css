@@ -11,31 +11,12 @@
     padding: 5px 35px 5px 20px !important;
   }
   
-  .pro-inner-item:hover {
-    background-color: #4f4f4f;
-    color: #ffffff;
-  }
-  
-  .pro-menu-item.active {
-    color: #6870fa !important;
-  }
-  
   .menu-item-title {
     font-weight: normal;
     transition: all 0.3s ease;
   }
   
-  .menu-item-title.selected {
-    font-weight: bold;
-    color: #ffffff;
-  }
-  
   .submenu-item {
     padding-left: 40px;
-  }
-  
-  .submenu-item:hover {
-    background-color: #4f4f4f;
-    color: #ffffff;
   }
   

@@ -60,6 +60,23 @@ export const tokens = (mode) => ({
           800: "#2a2d64",
           900: "#151632",
         },
+        tmp:{
+          100 : "#424140"
+        },
+        background: {
+          100: "#1e1e1e",
+          200: "#6b6b6b",
+          300: "#262626"
+        },
+        active: {
+          100:"#ffffff"
+        },
+        hover: {
+          100: "#292929"
+        },
+        activeIcon: {
+          100:"#309cf8"
+        }
       }
     : {
         grey: {
@@ -117,6 +134,23 @@ export const tokens = (mode) => ({
           800: "#c3c6fd",
           900: "#e1e2fe",
         },
+        tmp:{
+          100 : "#EEECEE"
+        },
+        background: {
+          100: "#ffffff",
+          200: "#948f8c",
+          300: "#f0f0f0"
+        },
+        active: {
+          100:"#309cf8"
+        },
+        hover: {
+          100: "#c8e4fd"
+        },
+        activeIcon: {
+          100:"#309cf8"
+        }
       }),
 });
 
@@ -129,19 +163,19 @@ export const themeSettings = (mode) => {
       ...(mode === "dark"
         ? {
             // palette values for dark mode
-            primary: {
-              main: colors.primary[500],
-            },
+            // primary: {
+            //   main: colors.primary[200],
+            // },
             secondary: {
               main: colors.greenAccent[500],
             },
             neutral: {
               dark: colors.grey[700],
               main: colors.grey[500],
-              light: colors.grey[100],
+              light: colors.grey[500],
             },
             background: {
-              default: colors.primary[500],
+              default: "#121212",
             },
           }
         : {
@@ -158,8 +192,9 @@ export const themeSettings = (mode) => {
               light: colors.grey[100],
             },
             background: {
-              default: "#fcfcfc",
+              default: "#fafafa",
             },
+            
           }),
     },
     typography: {
@@ -199,7 +234,7 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = () => {
-  const [mode, setMode] = useState("dark");
+  const [mode, setMode] = useState("light");
 
   const colorMode = useMemo(
     () => ({
@@ -210,5 +245,6 @@ export const useMode = () => {
   );
 
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+  
   return [theme, colorMode];
 };

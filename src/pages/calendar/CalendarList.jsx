@@ -46,6 +46,25 @@ const Calendar = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const fetchEvents = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:8080/api/events"); // URL API của bạn
+  //       const fetchedEvents = response.data.map(event => ({
+  //         id: event.id,
+  //         title: event.title,
+  //         start: event.start,
+  //         end: event.end,
+  //         allDay: event.allDay || false,
+  //       }));
+  //       setEvents(fetchedEvents);
+  //     } catch (error) {
+  //       console.error("Lỗi khi tải dữ liệu sự kiện:", error);
+  //     }
+  //   };
+  
+  //   fetchEvents();
+  // }, []);
   return (
     <Box m="20px">
       <Header title="Calendar" subtitle="Full Calendar Interactive Page" />

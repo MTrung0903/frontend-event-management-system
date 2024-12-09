@@ -95,14 +95,14 @@ const TaskList = () => {
   return (
     <div className="kanban-container">
       <div className="kanban-header">
-        <Typography variant="h4">Task Board</Typography>
+        <Typography variant="h4">Danh sách công việc</Typography>
         <Button 
           variant="contained" 
           color="primary" 
           startIcon={<AddIcon />}
           onClick={() => window.location.href = '/tasks/add'}
         >
-          Add New Task
+          Thêm công việc
         </Button>
       </div>
 

@@ -1,25 +1,42 @@
-import { Box, Button, TextField, Select, MenuItem, FormHelperText, FormControl } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormHelperText,
+  FormControl,
+  Typography,
+  IconButton,
+  Grid
+} from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Header from "../../components/Header";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
+import { useNavigate } from "react-router-dom";
 
-const SponsorAddForm = () => {
+const SponsorAdd = ({ closeDialog, fetchSponsors }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [sponsorshipLevels, setSponsorshipLevels] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch sponsorship levels from API
   useEffect(() => {
     const fetchSponsorshipLevels = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/man/sponsorship",  {
+        const response = await axios.get(
+          "http://localhost:8080/man/sponsorship",
+          {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`, // Thêm JWT token từ localStorage
+              Authorization: localStorage.getItem("token"),
             },
-          });
+          }
+        );
         setSponsorshipLevels(response.data.data);
       } catch (error) {
         console.error("Error fetching sponsorship levels:", error);
@@ -27,29 +44,42 @@ const SponsorAddForm = () => {
     };
     fetchSponsorshipLevels();
   }, []);
-
+  const onBack = async () => {
+    navigate(`/sponsors`);
+  };
   const handleFormSubmit = async (values, { resetForm }) => {
     try {
-      const sponsorDTO = {
-        name: values.name,
-        contact: values.contact,
-        email: values.email,
-        phone: values.phone,
-        address: values.address,
-        website: values.website,
-        sponsorshipId: values.sponsorshipId, // Gửi sponsorshipId
-        sponsorshipLevel: values.sponsorshipLevel, // Gửi tên cấp độ
-      };
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("contact", values.contact);
+      formData.append("email", values.email);
+      formData.append("phone", values.phone);
+      formData.append("address", values.address);
+      formData.append("website", values.website);
+      formData.append("sponsorshipId", values.sponsorshipId);
+      formData.append("sponsorshipLevel", values.sponsorshipLevel);
 
-      const response = await axios.post("http://localhost:8080/man/sponsor", sponsorDTO, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyMUBleGFtcGxlLmNvbSIsImlhdCI6MTczMjI5MTUzOCwiZXhwIjoxNzMyODk2MzM4LCJyb2xlcyI6WyJST0xFX0FETUlOIl19.nur9f7xHbpDJy_gNtwZPJ8AOINfalsIIU30oEu8s2GwDvo5UWBKtiur7tmWYnGhLVBA__e2TSpxE7b6HB9uxgw`, // Thêm JWT token từ localStorage
-        },
-      });
+      // Nếu có logo, thêm vào formData
+      if (values.sponsorLogo) {
+        formData.append("logo", values.sponsorLogo);
+      }
+
+      const response = await axios.post(
+        "http://localhost:8080/man/sponsor",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       alert("Sponsor added successfully!");
       console.log("Response:", response.data);
       resetForm();
+      closeDialog();
+      fetchSponsors();
+      setPreviewImage(null);
     } catch (error) {
       console.error("Error adding sponsor:", error);
       alert("Failed to add sponsor. Please try again.");
@@ -58,8 +88,6 @@ const SponsorAddForm = () => {
 
   return (
     <Box m="20px">
-      <Header title="ADD SPONSOR" subtitle="Add a New Sponsor" />
-
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
@@ -75,137 +103,243 @@ const SponsorAddForm = () => {
           setFieldValue,
         }) => (
           <form onSubmit={handleSubmit}>
-            <Box
-              display="grid"
-              gap="30px"
-              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-              sx={{
-                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Sponsor Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.name}
-                name="name"
-                error={!!touched.name && !!errors.name}
-                helperText={touched.name && errors.name}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Contact"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.contact}
-                name="contact"
-                error={!!touched.contact && !!errors.contact}
-                helperText={touched.contact && errors.contact}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="email"
-                label="Email"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.email}
-                name="email"
-                error={!!touched.email && !!errors.email}
-                helperText={touched.email && errors.email}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Phone"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.phone}
-                name="phone"
-                error={!!touched.phone && !!errors.phone}
-                helperText={touched.phone && errors.phone}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.address}
-                name="address"
-                error={!!touched.address && !!errors.address}
-                helperText={touched.address && errors.address}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Website"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.website}
-                name="website"
-                error={!!touched.website && !!errors.website}
-                helperText={touched.website && errors.website}
-                sx={{ gridColumn: "span 4" }}
-              />
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Box display="flex" flexDirection="column" alignItems="flex-start">
+                  {previewImage ? (
+                    <Box
+                      component="img"
+                      src={previewImage}
+                      alt="Preview"
+                      sx={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        mb: 2,
+                      }}
+                    />
+                  ) : (
+                    <Box
+                      sx={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: "50%",
+                        backgroundColor: "#e0e0e0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mb: 2,
+                      }}
+                    >
+                      <Typography variant="caption" color="textSecondary">
+                        Ảnh không khả dụng
+                      </Typography>
+                    </Box>
+                  )}
+                  <Button
+                    variant="contained"
+                    component="label"
+                    sx={{
+                      textTransform: "none",
+                      width: "fit-content",
+                      padding: "6px 16px",
+                    }}
+                  >
+                    Chọn logo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        setFieldValue("sponsorLogo", file);
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = () => setPreviewImage(reader.result);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </Button>
+                  {touched.sponsorLogo && errors.sponsorLogo && (
+                    <FormHelperText error>{errors.sponsorLogo}</FormHelperText>
+                  )}
+                </Box>
+              </Grid>
+
+              {/* Các trường input khác */}
+              <Grid item xs={12}>
+                <input
+                  type="text"
+                  placeholder="Sponsor Name"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.name}
+                  name="name"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                  }}
+                />
+                {touched.name && errors.name && (
+                  <FormHelperText error>{errors.name}</FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <textarea
+                  placeholder="Contact"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.contact}
+                  name="contact"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                    resize: 'vertical', // Cho phép thay đổi kích thước theo chiều dọc
+                    minHeight: '100px', // Chiều cao tối thiểu để hiển thị nhiều dòng
+                  }}
+                />
+                {touched.contact && errors.contact && (
+                  <FormHelperText error>{errors.contact}</FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.email}
+                  name="email"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                  }}
+                />
+                {touched.email && errors.email && (
+                  <FormHelperText error>{errors.email}</FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  type="text"
+                  placeholder="Phone"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.phone}
+                  name="phone"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                  }}
+                />
+                {touched.phone && errors.phone && (
+                  <FormHelperText error>{errors.phone}</FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  type="text"
+                  placeholder="Address"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.address}
+                  name="address"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                  }}
+                />
+                {touched.address && errors.address && (
+                  <FormHelperText error>{errors.address}</FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  type="text"
+                  placeholder="Website"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.website}
+                  name="website"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    boxSizing: 'border-box',
+                    borderRadius: '4px',
+                    border: '1px solid #ccc',
+                  }}
+                />
+                {touched.website && errors.website && (
+                  <FormHelperText error>{errors.website}</FormHelperText>
+                )}
+              </Grid>
 
               {/* Sponsorship Level Select */}
-              <FormControl
-                fullWidth
-                variant="filled"
-                error={!!touched.sponsorshipId && !!errors.sponsorshipId}
-                sx={{ gridColumn: "span 4" }}
-              >
-                <Select
-                  value={values.sponsorshipId || ""}
-                  onChange={(e) => {
-                    const selected = sponsorshipLevels.find(
-                      (level) => level.sponsorShipID === e.target.value
-                    );
-                    setFieldValue("sponsorshipId", e.target.value);
-                    setFieldValue("sponsorshipLevel", selected?.level || "");
-                  }}
-                  onBlur={handleBlur}
-                  name="sponsorshipId"
-                  displayEmpty
+              <Grid item xs={12}>
+                <FormControl
+                  fullWidth
+                  variant="filled"
+                  error={!!touched.sponsorshipId && !!errors.sponsorshipId}
                 >
-                  <MenuItem value="" disabled>
-                    Select Sponsorship Level
-                  </MenuItem>
-                  {sponsorshipLevels.map((level) => (
-                    <MenuItem key={level.sponsorShipID} value={level.sponsorShipID}>
-                      {level.level}
+                  <Select
+                    value={values.sponsorshipId || ""}
+                    onChange={(e) => {
+                      const selected = sponsorshipLevels.find(
+                        (level) => level.sponsorShipID === e.target.value
+                      );
+                      setFieldValue("sponsorshipId", e.target.value);
+                      setFieldValue("sponsorshipLevel", selected?.level || "");
+                    }}
+                    onBlur={handleBlur}
+                    name="sponsorshipId"
+                    displayEmpty
+                  >
+                    <MenuItem value="" disabled>
+                      Chọn mức độ tài trợ
                     </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText>
-                  {touched.sponsorshipId && errors.sponsorshipId}
-                </FormHelperText>
-              </FormControl>
-            </Box>
+                    {sponsorshipLevels.map((level) => (
+                      <MenuItem
+                        key={level.sponsorShipID}
+                        value={level.sponsorShipID}
+                      >
+                        {level.level}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>
+                    {touched.sponsorshipId && errors.sponsorshipId}
+                  </FormHelperText>
+                </FormControl>
+              </Grid>
+            </Grid>
 
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Add Sponsor
+                Thêm nhà tài trợ
               </Button>
             </Box>
           </form>
         )}
       </Formik>
     </Box>
+
   );
 };
 
@@ -216,7 +350,8 @@ const validationSchema = yup.object().shape({
   phone: yup.string().required("Phone is required"),
   address: yup.string().required("Address is required"),
   website: yup.string().url("Invalid URL").required("Website is required"),
-  sponsorshipId: yup.number().required("Sponsorship level is required"),
+  sponsorshipId: yup.string().required("Sponsorship level is required"),
+  sponsorLogo: yup.mixed(),
 });
 
 const initialValues = {
@@ -228,6 +363,7 @@ const initialValues = {
   website: "",
   sponsorshipId: "",
   sponsorshipLevel: "",
+  sponsorLogo: null,
 };
 
-export default SponsorAddForm;
+export default SponsorAdd;
