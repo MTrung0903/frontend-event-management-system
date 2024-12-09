@@ -1,4 +1,4 @@
-# **[EVENT MANAGEMENT SYSTEM]**
+# **EVENT MANAGEMENT SYSTEM**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/MTrung0903/frontend-event-management-system/actions)  
@@ -17,7 +17,6 @@
 - 🎨 **UI/UX thân thiện và hiện đại.**
 - 🔍 **Tìm kiếm và lọc dữ liệu thời gian thực.**
 - ⚡ **Tích hợp với API backend để xử lý dữ liệu.**
-- 📱 **Responsive: Tối ưu hiển thị trên cả desktop và mobile.**
 
 ---
 
@@ -36,4 +35,3 @@
 - **Node.js**: Phiên bản 14 trở lên.
 - **npm** hoặc **yarn** để quản lý package.
 
-### **Hướng dẫn cài đặt**
