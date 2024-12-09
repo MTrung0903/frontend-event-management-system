@@ -1,4 +1,4 @@
-# **[Tên Dự Án]**
+# **[EVENT MANAGEMENT SYSTEM]**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/MTrung0903/frontend-event-management-system/actions)  
@@ -12,20 +12,28 @@
 
 ---
 
-## Các tính năng chính
+## **Các tính năng chính**
 
 - 🎨 **UI/UX thân thiện và hiện đại.**
 - 🔍 **Tìm kiếm và lọc dữ liệu thời gian thực.**
 - ⚡ **Tích hợp với API backend để xử lý dữ liệu.**
+- 📱 **Responsive: Tối ưu hiển thị trên cả desktop và mobile.**
+
 ---
 
-## Công nghệ sử dụng
+## **Công nghệ sử dụng**
 
 - **React** (v17 hoặc mới hơn)
 - **Axios**: Kết nối với backend API.
 - **React Router**: Quản lý điều hướng.
-  
+- **Tailwind CSS** (hoặc các thư viện CSS khác nếu có).
+
 ---
-### Yêu cầu
-- Node.js: Phiên bản 14 trở lên.
-- npm hoặc yarn để quản lý package.
+
+## **Cách cài đặt**
+
+### **Yêu cầu**
+- **Node.js**: Phiên bản 14 trở lên.
+- **npm** hoặc **yarn** để quản lý package.
+
+### **Hướng dẫn cài đặt**
