@@ -34,3 +34,15 @@
 - **Node.js**: Phiên bản 14 trở lên.
 - **npm** hoặc **yarn** để quản lý package.
 
+## **Giao diện tính năng nổi bật**
+- **Dashboard**
+![image](https://github.com/user-attachments/assets/57eeec02-188e-4d8f-85c2-f371c1feff28)
+- **Danh sách sự kiện**
+![image](https://github.com/user-attachments/assets/0151ad03-d248-4fbc-b838-0feebe7c233f)
+- **Calendar**
+![image](https://github.com/user-attachments/assets/76dd7cab-87f7-4783-93db-72d2794ba100)
+- **Kanban**
+- ![image](https://github.com/user-attachments/assets/826604d8-a09f-4fb3-b68b-d4e782464d8d)
+- **Sắp sếp phiên thuyết trình diễn giả**
+![image](https://github.com/user-attachments/assets/66c22761-4c57-4b35-b8d2-f6875d6b5cf7)
+
