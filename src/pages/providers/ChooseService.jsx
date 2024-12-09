@@ -40,22 +40,52 @@ const getProviderInEvent = async (eventId, providerId) => {
   );
   return response.data.data;
 };
+const getRentalService = async (eventId, serviceId) => {
+  const response = await axios.get(
+    `http://localhost:8080/man/proService/${eventId}/detail-ser/${serviceId}`,
+    {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    }
+  );
+  return response.data.data;
+};
 
 const ViewService = ({eventid, providerid}) => {
-  console.log("eventId" + eventid)
-  console.log("providerId"+ providerid)
+
   const  providerId  = providerid
   const  eventId  = eventid
-  console.log("eventIdssssssss" + eventId)
-  console.log("providerIdssssssssssss"+ providerId)
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
+  const [rentalData, setRentalData] = useState({});
+  const handleDateChange = (e, serviceId, dateType) => {
+    const updatedRentalData = { ...rentalData };
+    updatedRentalData[serviceId] = {
+      ...updatedRentalData[serviceId],
+      [dateType]: e.target.value,
+    };
+    setRentalData(updatedRentalData); // Cập nhật state rentalData
+  };
+  
+useEffect(() => {
     const fetchProvider = async () => {
       try {
         const data = await getProviderInEvent(eventId, providerId);
         setProvider(data);
+
+        // Lấy rentalData cho từng service
+        const rentalInfo = {};
+        for (const service of data.listProviderServices) {
+          console.log(service.id)
+          const rentalDetails = await getRentalService(eventId, service.id);
+          rentalInfo[service.id] = {
+            rentalDate: rentalDetails.rentalDate,
+            expDate: rentalDetails.expDate,
+          };
+        }
+        setRentalData(rentalInfo);
       } catch (err) {
         setError("Failed to fetch provider details");
       } finally {
@@ -94,67 +124,86 @@ const ViewService = ({eventid, providerid}) => {
   }
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
-      <Typography
-        variant="h4"
-        sx={{ fontWeight: "bold", mb: 2, fontSize: "32px", color: "#333" }}
-      >
-        {provider.name}
-      </Typography>
-      {provider.listProviderServices &&
-      provider.listProviderServices.length > 0 ? (
-        <Grid container spacing={2}>
-          {provider.listProviderServices.map((service, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <CustomCard
+<Container sx={{ mt: 4, mb: 4 }}>
+  <Typography
+    variant="h4"
+    sx={{ fontWeight: "bold", mb: 2, fontSize: "32px", color: "#333" }}
+  >
+    {provider.name}
+  </Typography>
+  {provider.listProviderServices && provider.listProviderServices.length > 0 ? (
+    <Grid container spacing={2}>
+      {provider.listProviderServices.map((service, index) => (
+        <Grid item xs={12} sm={4} md={6} key={index}>
+          <CustomCard
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              backgroundColor: "#fff",
+              "&:hover": {
+                boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+              },
+            }}
+          >
+            <CardContent>
+              <Typography
+                variant="h6"
                 sx={{
-                  p: 2,
-                  borderRadius: 2,
-                  backgroundColor: "#fff",
-                  "&:hover": {
-                    boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-                  },
+                  fontWeight: "600",
+                  mb: 1.5,
+                  fontSize: "1rem",
+                  color: "#333",
                 }}
               >
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: "600",
-                      mb: 1,
-                      fontSize: "1rem",
-                      color: "#333",
-                    }}
-                  >
-                    {service.serviceName}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#555", mb: 0.5, fontSize: "0.875rem" }}
-                  >
-                    <strong>Loại:</strong> {service.serviceType}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#555", mb: 0.5, fontSize: "0.875rem" }}
-                  >
-                    <strong>Giá:</strong> {service.price}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#555", mb: 0.5, fontSize: "0.875rem" }}
-                  >
-                    <strong>Thời gian sử dụng:</strong> {service.duration}
-                  </Typography>
-                </CardContent>
-              </CustomCard>
-            </Grid>
-          ))}
+                {service.serviceName}
+              </Typography>
+              <div style={{ display: "flex", marginBottom: "10px" }}>
+                <strong style={{ width: "30%", flexShrink: 0 }}>Loại:</strong>
+                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+                  {service.serviceType}
+                </Typography>
+              </div>
+              <div style={{ display: "flex", marginBottom: "10px" }}>
+                <strong style={{ width: "30%", flexShrink: 0 }}>Giá:</strong>
+                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+                  {service.price}
+                </Typography>
+              </div>
+              
+
+              {/* Chỉ hiển thị ngày thuê và ngày hết hạn, disable input */}
+              <div style={{ display: "flex", marginBottom: "10px" }}>
+                <strong style={{ width: "30%", flexShrink: 0 }}>Ngày thuê:</strong>
+                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+                  <input
+                    type="datetime-local"
+                    value={rentalData[service.id]?.rentalDate || ""}
+                    disabled
+                    style={{ width: "92%" }}
+                  />
+                </Typography>
+              </div>
+              <div style={{ display: "flex", marginBottom: "10px" }}>
+                <strong style={{ width: "30%", flexShrink: 0 }}>Ngày hết hạn:</strong>
+                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+                  <input
+                    type="datetime-local"
+                    value={rentalData[service.id]?.expDate || ""}
+                    disabled
+                    style={{ width: "92%" }}
+                  />
+                </Typography>
+              </div>
+            </CardContent>
+          </CustomCard>
         </Grid>
-      ) : (
-        <Typography>Dịch vụ không khả dụng.</Typography>
-      )}
-    </Container>
+      ))}
+    </Grid>
+  ) : (
+    <Typography>Dịch vụ không khả dụng.</Typography>
+  )}
+</Container>
+
   );
 };
 

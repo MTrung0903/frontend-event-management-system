@@ -288,30 +288,37 @@ const AddProviderForEvent = () => {
       </Menu>
 
       <Dialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        sx={{
-          "& .MuiDialog-paper": {
-            width: "900px",
-            maxWidth: "none",
-          },
-        }}
-        fullWidth
-      >
-        <DialogTitle>Thêm nhà cung cấp dịch vụ</DialogTitle>
-        <DialogContent>
-          <ProviderTabs
-            onClose={handleDialogClose}
-            onProviderAdded={handleProviderAdded}
-          />
-        </DialogContent>
+  open={dialogOpen}
+  onClose={handleDialogClose}
+  sx={{
+    "& .MuiDialog-paper": {
+      width: "900px", // Giữ chiều rộng cố định cho Dialog
+      maxWidth: "none",
+      height: "auto", 
+    },
+  }}
+  fullWidth
+>
+  <DialogTitle>Thêm nhà cung cấp dịch vụ</DialogTitle>
+  <DialogContent
+    sx={{
+      maxHeight: "500px", // Giới hạn chiều cao của nội dung Dialog
+      overflowY: "auto",  // Cho phép cuộn nếu nội dung vượt quá chiều cao
+    }}
+  >
+    <ProviderTabs
+      onClose={handleDialogClose}
+      onProviderAdded={handleProviderAdded}
+    />
+  </DialogContent>
 
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Hủy
-          </Button>
-        </DialogActions>
-      </Dialog>
+  <DialogActions>
+    <Button onClick={handleDialogClose} color="primary">
+      Hủy
+    </Button>
+  </DialogActions>
+</Dialog>
+
       {/*Dialog view detail */}
       <Dialog
         open={isDialogDetailOpen}

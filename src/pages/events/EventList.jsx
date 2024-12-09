@@ -136,7 +136,7 @@ const EventList = ({ setSelectedEvent }) => {
     };
 
     return (
-        <Box sx={{ padding: 2 }}>
+        <Box sx={{ padding: 2}}>
             <Box display="flex" justifyContent="space-between" alignItems="center" >
                 <TextField
                     placeholder="Tìm kiếm sự kiện"
