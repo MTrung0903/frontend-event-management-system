@@ -1,6 +1,5 @@
 # **EVENT MANAGEMENT SYSTEM**
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/MTrung0903/frontend-event-management-system/actions)  
 [![Contributors](https://img.shields.io/github/contributors/MTrung0903/frontend-event-management-system)](https://github.com/MTrung0903/frontend-event-management-system/graphs/contributors)
 
