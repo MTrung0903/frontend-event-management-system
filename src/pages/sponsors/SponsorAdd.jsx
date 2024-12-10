@@ -17,6 +17,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+
 
 const SponsorAdd = ({ closeDialog, fetchSponsors }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -74,7 +76,13 @@ const SponsorAdd = ({ closeDialog, fetchSponsors }) => {
           },
         }
       );
-      alert("Sponsor added successfully!");
+     
+      Swal.fire({
+        title: "Save",
+        text: "Thêm nhà tài trợ thành công",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
       console.log("Response:", response.data);
       resetForm();
       closeDialog();
@@ -82,7 +90,12 @@ const SponsorAdd = ({ closeDialog, fetchSponsors }) => {
       setPreviewImage(null);
     } catch (error) {
       console.error("Error adding sponsor:", error);
-      alert("Failed to add sponsor. Please try again.");
+      Swal.fire({
+        title: "Save",
+        text: "Thêm nhà tài trợ thất bại",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     }
   };
 

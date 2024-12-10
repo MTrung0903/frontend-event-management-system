@@ -8,6 +8,7 @@ import {
   assignedTeam,
 } from "../../routes/route";
 import { useParams } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 // Component Modal Dialog for Add Task
 const AddTaskDialog = ({ onClose, onSave, eventId }) => {
@@ -117,14 +118,19 @@ const KanbanBoard = () => {
   }, [columns]);
 
   const handleStatusChange = async (taskId, newStatus, columnId) => {
-    // Kiểm tra nếu chưa chọn team, thì không cho phép thay đổi trạng thái
+
     const task = columns[columnId].find((task) => task.taskId === taskId);
     if (!task.teamId || task.teamId === 0) {
-      alert("Assigned team chưa được chỉ định");
+     
+      Swal.fire({
+        title: "Assigned",
+        text: "Task vẫn chưa có nhóm thực hiện",
+        icon: "warning",
+        confirmButtonText: "OK"
+      });
       return;
     }
 
-    // Kiểm tra nếu trạng thái chuyển đổi hợp lệ
     const validTransitions = {
       "to do": ["doing", "done"],
       doing: ["to do", "done"],
@@ -132,17 +138,23 @@ const KanbanBoard = () => {
     };
 
     if (!validTransitions[task.taskStatus].includes(newStatus)) {
-      alert("Invalid status transition");
+
+      Swal.fire({
+        title: "Status",
+        text: "Invalid status transition",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
       return;
     }
 
     task.taskStatus = newStatus;
 
     try {
-      // Cập nhật task qua API
+
       const response = await updateTask(task);
       if (response.success) {
-        // Nếu cập nhật thành công, cập nhật lại giao diện
+
         const updatedColumns = { ...columns };
         updatedColumns[columnId] = updatedColumns[columnId].filter(
           (t) => t.taskId !== taskId
@@ -151,11 +163,17 @@ const KanbanBoard = () => {
 
         setColumns(updatedColumns);
       } else {
-        //alert('Task update failed');
+
       }
     } catch (error) {
       console.error("Error updating task:", error);
-      alert("There was an error updating the task");
+
+      Swal.fire({
+        title: "Update",
+        text: "Cập nhật task thất bại",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     }
   };
 
@@ -174,19 +192,35 @@ const KanbanBoard = () => {
       ...prev,
       [columnId]: prev[columnId].filter((task) => task.taskId !== taskId),
     }));
+    Swal.fire({
+      title: "Delete", 
+      text: "Xóa task thành công",
+      icon: "success",
+      confirmButtonText: "OK"
+    });
   };
   const handleAssignedTeamChange = async (taskId, teamId) => {
     try {
       const responseData = await assignedTeam(taskId, teamId);
       console.log("Response Data:", responseData);
       if (responseData === true) {
-        alert("Team assigned successfully!");
+        Swal.fire({
+          title: "Save",
+          text: "Chỉnh định nhóm thực hiện thành công",
+          icon: "success",
+          confirmButtonText: "OK"
+        });
       } else {
-        alert("Failed to assign team");
+        
+        Swal.fire({
+          title: "Save",
+          text: "Chỉnh định nhóm thực hiện thất bại",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
       }
     } catch (error) {
       console.error("Error assigning team:", error);
-      alert("Error while assigning team");
     }
   };
 
@@ -195,10 +229,10 @@ const KanbanBoard = () => {
   };
 
   const handleSaveTask = async (newTask) => {
-    // Thêm task vào API
+
     await createTask(newTask);
 
-    // Fetch tất cả task lại để lấy danh sách mới nhất
+
     const tasks = await fetchTasks(eventId);
     const groupedTasks = {
       "to do": tasks.filter((task) => task.taskStatus === "to do"),
@@ -206,7 +240,7 @@ const KanbanBoard = () => {
       done: tasks.filter((task) => task.taskStatus === "done"),
     };
 
-    // Cập nhật lại state với danh sách task mới
+
     setColumns(groupedTasks);
   };
 

@@ -17,7 +17,7 @@ import {
     MenuItem
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-
+import Swal from 'sweetalert2';
 // Tạo instance Axios với token
 const axiosInstance = axios.create({
     baseURL: "http://localhost:8080/man/sponsor/",
@@ -137,10 +137,20 @@ const SponsorDetail = () => {
 
             setSponsor(formData);
             setIsEditOpen(false);
-            alert("Sponsor updated successfully!");
+            Swal.fire({
+                title: "Update",
+                text: "Cập nhật nhà tài trợ thành công",
+                icon: "success",
+                confirmButtonText: "OK"
+              });
         } catch (err) {
             console.error("Error updating sponsor:", err);
-            alert("Failed to update sponsor. Please try again.");
+            Swal.fire({
+                title: "Update",
+                text: "Cập nhật thất bại",
+                icon: "error",
+                confirmButtonText: "OK"
+              });
         }
     };
 

@@ -66,7 +66,7 @@ const ViewService = ({eventid, providerid}) => {
       ...updatedRentalData[serviceId],
       [dateType]: e.target.value,
     };
-    setRentalData(updatedRentalData); // Cập nhật state rentalData
+    setRentalData(updatedRentalData); 
   };
   
 useEffect(() => {
@@ -75,7 +75,7 @@ useEffect(() => {
         const data = await getProviderInEvent(eventId, providerId);
         setProvider(data);
 
-        // Lấy rentalData cho từng service
+      
         const rentalInfo = {};
         for (const service of data.listProviderServices) {
           console.log(service.id)

@@ -76,7 +76,7 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
           },
         }
       );
-      alert("Provider added successfully!");
+      //alert("Provider added successfully!");
       fetchProviders();
     } catch (error) {
       console.error("Error adding provider:", error);
@@ -165,7 +165,7 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset trang khi thay đổi số dòng mỗi trang
+    setPage(0); 
   };
 
   useEffect(() => {

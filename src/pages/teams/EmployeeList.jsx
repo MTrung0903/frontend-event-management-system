@@ -21,6 +21,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 function EmployeeList({ teamId, employees, onTeamUpdate }) {
   const { eventId } = useParams();
@@ -47,11 +48,21 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
       console.log(response.data);
       if (response.data.data === true) {
         console.log(response.data.data);
-        alert("Member added successfully!");
+        Swal.fire({
+          title: "Add member",
+          text: "Thêm thành viên thành công",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
         setOpenDialog(false);
         onTeamUpdate();
       } else {
-        alert("Failed to add member!");
+        Swal.fire({
+          title: "Add member",
+          text: "Thêm thành viên thất bại",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
       }
     } catch (err) {
       console.error("Error adding member:", err);
@@ -75,14 +86,29 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
       setLoading(true);
       const response = await deleteTeamMember(teamId, employeeId);
       if (response.status === "success") {
-        alert(response.message);
+        Swal.fire({
+          title: "Delete",
+          text: "Xóa thành viên thành công",
+          icon: "success",
+          confirmButtonText: "OK"
+        });
         onTeamUpdate();
       } else {
-        alert(response.message);
+        Swal.fire({
+          title: "Delete",
+          text: "Xóa thành viên thất bại",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
       }
     } catch (error) {
       console.error("Error deleting member:", error);
-      alert("An error occurred.");
+      Swal.fire({
+        title: "Delete",
+        text: "Xóa thành viên thất bại",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     } finally {
       setLoading(false);
     }

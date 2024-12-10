@@ -18,9 +18,11 @@ import axios from "axios";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
+
 
 const SpeakerAdd = () => {
-  const [open, setOpen] = useState(false); // Popup chính
+  const [open, setOpen] = useState(false); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [title, setTitle] = useState("");
@@ -56,7 +58,12 @@ const SpeakerAdd = () => {
       !description ||
       !image
     ) {
-      alert("Vui lòng điền đầy đủ thông tin.");
+      Swal.fire({
+        title: "Warning",
+        text: "Vui lòng điền đầy đủ thông tin",
+        icon: "warning",
+        confirmButtonText: "OK"
+      });
       return;
     }
 
@@ -84,7 +91,12 @@ const SpeakerAdd = () => {
         }
       );
       console.log("API Response:", response);
-      alert("Thêm diễn giả thành công!");
+      Swal.fire({
+        title: "Save",
+        text: "Thêm diễn giả thành công",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
       setName("");
       setEmail("");
       setTitle("");
@@ -95,7 +107,12 @@ const SpeakerAdd = () => {
       setImagePreview(null);
     } catch (error) {
       console.error("Lỗi khi thêm diễn giả:", error);
-      alert("Có lỗi xảy ra, vui lòng thử lại.");
+      Swal.fire({
+        title: "Save",
+        text: "Thêm diễn giả thất bại",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     } finally {
       setLoading(false);
     }

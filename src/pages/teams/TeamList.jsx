@@ -21,6 +21,7 @@ import EmployeeList from "./EmployeeList";
 import { useParams } from "react-router-dom";
 import TaskList from "./TaskList"
 import Header from "../../components/Header";
+import Swal from "sweetalert2";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -86,17 +87,35 @@ function TeamList() {
       setLoading(true);
       const response = await createTeam({ ...dataTeam, eventId });
       if (response.statusCode === 0) {
-        alert("Team created successfully!");
+
+        Swal.fire({
+          title: "Create team",
+          text: "Team created successfully!",
+          icon: "success",
+          confirmButtonText: "OK"
+        });
         const teams = await fetchData();
         setTeams(teams);
         setOpenDialogCreateTeam(false);
         setDataTeam({ teamName: "", eventId: "" });
       } else {
-        alert("Failed to create team.");
+       
+        Swal.fire({
+          title: "Create team",
+          text: "Failed to create team.",
+          icon: "failed",
+          confirmButtonText: "OK"
+        });
       }
     } catch (error) {
       console.error("Error creating team:", error);
-      alert("An error occurred.");
+
+      Swal.fire({
+        title: "Error",
+        text: "An error occurred.",
+        icon: "failed",
+        confirmButtonText: "OK"
+      });
     } finally {
       setLoading(false);
     }

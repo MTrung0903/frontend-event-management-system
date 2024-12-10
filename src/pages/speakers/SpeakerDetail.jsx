@@ -18,6 +18,8 @@ import {
     CardMedia
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import Swal from 'sweetalert2';
+
 
 // Tạo instance Axios với token
 const axiosInstance = axios.create({
@@ -112,10 +114,21 @@ const SpeakerDetail = () => {
 
             setSpeaker(formData);
             setIsEditOpen(false);
-            alert("Speaker updated successfully!");
+
+            Swal.fire({
+                title: "Update",
+                text: "Cập nhật diễn giả thành công",
+                icon: "success",
+                confirmButtonText: "OK"
+              });
         } catch (err) {
             console.error("Error updating speaker:", err);
-            alert("Failed to update speaker. Please try again.");
+            Swal.fire({
+                title: "Update",
+                text: "Cập nhật diễn giả thất bại",
+                icon: "error",
+                confirmButtonText: "OK"
+              });
         }
     };
 

@@ -5,13 +5,14 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const EditProviderForm = ({onClose,providerid,handleFetch}) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const  providerId  = providerid 
   const navigate = useNavigate();
-  const [initialValues, setInitialValues] = useState(null); // State để lưu dữ liệu provider
+  const [initialValues, setInitialValues] = useState(null); 
 
   useEffect(() => {
     // Gọi API để lấy thông tin của provider theo ID
@@ -37,6 +38,7 @@ const EditProviderForm = ({onClose,providerid,handleFetch}) => {
       } catch (error) {
         console.error("Error fetching provider data:", error);
         alert("Failed to load provider details. Please try again.");
+        
       }
     };
 
@@ -52,18 +54,28 @@ const EditProviderForm = ({onClose,providerid,handleFetch}) => {
           Authorization: localStorage.getItem("token"),
         },
       });
-      alert("Cập nhật thành công!");
+      Swal.fire({
+        title: "Update",
+        text: "Cập nhật thành công",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
       console.log("Response:", response.data);
       onClose();
       handleFetch();
     } catch (error) {
       console.error("Error updating provider:", error);
-      alert("Cập nhật thất bại. Thử lại sau");
+      Swal.fire({
+        title: "Update",
+        text: "Cập nhật thất bại",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     }
   };
 
   if (!initialValues) {
-    // Hiển thị loading khi đang tải dữ liệu
+   
     return <div>Tải nhà cung cấp dịch vụ...</div>;
   }
 

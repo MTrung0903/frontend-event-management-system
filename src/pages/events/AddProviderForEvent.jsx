@@ -25,7 +25,7 @@ import {
   PersonOutline,
 } from "@mui/icons-material";
 import axios from "axios";
-
+import { Snackbar, Alert } from "@mui/material";
 import ProviderTabs from "../providers/AddProvider";
 import ViewService from "../providers/ChooseService";
 
@@ -271,7 +271,7 @@ const AddProviderForEvent = () => {
         <MenuItem
           onClick={() => {
             handleMenuClose();
-            handleDialogDetailOpen(); // Mở dialog chi tiết
+            handleDialogDetailOpen(); 
           }}
         >
           {" "}
@@ -292,7 +292,7 @@ const AddProviderForEvent = () => {
   onClose={handleDialogClose}
   sx={{
     "& .MuiDialog-paper": {
-      width: "900px", // Giữ chiều rộng cố định cho Dialog
+      width: "900px",
       maxWidth: "none",
       height: "auto", 
     },
@@ -302,8 +302,8 @@ const AddProviderForEvent = () => {
   <DialogTitle>Thêm nhà cung cấp dịch vụ</DialogTitle>
   <DialogContent
     sx={{
-      maxHeight: "500px", // Giới hạn chiều cao của nội dung Dialog
-      overflowY: "auto",  // Cho phép cuộn nếu nội dung vượt quá chiều cao
+      maxHeight: "500px", 
+      overflowY: "auto", 
     }}
   >
     <ProviderTabs

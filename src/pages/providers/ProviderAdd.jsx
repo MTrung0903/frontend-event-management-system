@@ -4,6 +4,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 const ProviderAddForm = ({ onClose ,onProviderAdded }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -31,9 +32,19 @@ const ProviderAddForm = ({ onClose ,onProviderAdded }) => {
       );
       console.log("Response:", response.data);
       if (response.data.statusCode === 0 && response.data.data === true) {
-        alert("Thêm thành công");
+        Swal.fire({
+          title: "Save",
+          text: "Thêm thành công",
+          icon: "success",
+          confirmButtonText: "OK"
+        });
       } else {
-        alert("Thêm thất bại");
+        Swal.fire({
+          title: "Save",
+          text: "Thêm thất bại",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
       }
 
       resetForm();
@@ -41,7 +52,7 @@ const ProviderAddForm = ({ onClose ,onProviderAdded }) => {
       onClose();
     } catch (error) {
       console.error("Error adding provider:", error);
-      //alert("Failed to add provider. Please try again.");
+     
     }
   };
 
