@@ -7,8 +7,13 @@ import {
   Tabs,
   Tab,
   Box,
-
-
+  Button,
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Dialog,
+  TextField
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
@@ -40,11 +45,27 @@ function TeamList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+  const [openDialogCreateTeam, setOpenDialogCreateTeam] = useState(false);
 
   const handleChange = (event, newValue) => {
     setTabValue(newValue);
   };
-
+  const [dataTeam, setDataTeam] = useState({
+    teamName: "",
+    eventId: "",
+  });
+  const createTeam = async (dataTeam) => {
+    const response = await axios.post(
+      `http://localhost:8080/man/team`,
+      dataTeam,
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    return response.data;
+  };
   const fetchData = async () => {
     try {
       const response = await axios.get(
@@ -60,7 +81,26 @@ function TeamList() {
       throw new Error("Failed to fetch team data");
     }
   };
-
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const response = await createTeam({ ...dataTeam, eventId });
+      if (response.statusCode === 0) {
+        alert("Team created successfully!");
+        const teams = await fetchData();
+        setTeams(teams);
+        setOpenDialogCreateTeam(false);
+        setDataTeam({ teamName: "", eventId: "" });
+      } else {
+        alert("Failed to create team.");
+      }
+    } catch (error) {
+      console.error("Error creating team:", error);
+      alert("An error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleTeamUpdate = async () => {
     try {
       const detailTeam = await fetchData();
@@ -95,12 +135,28 @@ function TeamList() {
   }
 
   return (
-    <>
+    <div style={{marginLeft:"10px", marginRight:"5px"}}>
     <Header title="CHI TIẾT NHÓM"/>
+    <Button
+        type="submit"
+        variant="contained"
+        onClick={() => setOpenDialogCreateTeam(true)}
+        style={{
+          backgroundColor: "#3f51b5",
+          color: "#ffffff",
+         
+          padding: "8px 16px",
+          marginBottom:"10px",
+          marginLeft:"10px",
+
+        }}
+      >
+        Add Team
+      </Button>
       {teams.map((team) => (
-        <Accordion key={team.teamId}>
+        <Accordion key={team.teamId} defaultExpanded={true} sx={{ boxShadow: 'none', marginLeft:'10px' }} >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>{`Team: ${team.teamName}`}</Typography>
+            <Typography sx={{fontSize:"22px"}}>{`Team: ${team.teamName}`}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Tabs value={tabValue} onChange={handleChange}>
@@ -116,7 +172,41 @@ function TeamList() {
           </AccordionDetails>
         </Accordion>
       ))}
-    </>
+            {/* Dialog tạo team */}
+            <Dialog
+        open={openDialogCreateTeam}
+        onClose={() => setOpenDialogCreateTeam(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Thêm team</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Team Name"
+            name="teamName"
+            value={dataTeam.teamName}
+            onChange={(e) =>
+              setDataTeam({ ...dataTeam, teamName: e.target.value })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialogCreateTeam(false)} color="secondary">
+            Hủy
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            color="primary"
+            disabled={loading}
+            startIcon={loading && <CircularProgress size={20} />}
+          >
+            Lưu
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 }
 

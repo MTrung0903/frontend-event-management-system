@@ -154,6 +154,7 @@ const Sidebar = ({ selectedEvent, setSelectedEvent }) => {
             path: `/events/${selectedEvent.eventId}/team-detail`,
             icon: <GroupsOutlinedIcon />,
           },
+         
         ],
       },
 

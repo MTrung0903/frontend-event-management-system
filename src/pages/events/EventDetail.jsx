@@ -82,7 +82,7 @@ const EventDetail = () => {
       marginTop: '1px', 
       boxShadow: 3,
       backgroundColor: '#f5f5f5',
-      padding: '0 20px' // Padding cho phần nội dung
+      padding: '0 10px' 
     }}>
       {eventImage && (
         <CardMedia
@@ -90,7 +90,7 @@ const EventDetail = () => {
           height="300"
           image={eventImage}
           alt={event.eventName}
-          sx={{ objectFit: "cover", marginTop: '10px',  }}
+          sx={{ objectFit: "cover", marginTop: '5px',  }}
         />
       )}
       <CardContent sx={{ padding: '0 40px' }}>
@@ -106,49 +106,64 @@ const EventDetail = () => {
         <Grid container spacing={2} direction="column" sx={{ lineHeight: 2, paddingLeft: '10px', paddingRight: '10px' }}>
           <Grid item xs={12}>
             <Box display="flex" alignItems="center" mb={1}>
-              <CalendarMonthOutlinedIcon sx={{ color: "primary.main", marginRight: 1 }} />
+              
               <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
                 Thời gian
               </Typography>
             </Box>
+            <Box display="flex" alignItems="center" mb={1} paddingLeft={3}>       
+            <CalendarMonthOutlinedIcon sx={{ color: "primary.main", marginRight: 1 }} />
             <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' }}>
               {`${formatDateTime(event.eventStart)} - ${formatDateTime(event.eventEnd)}`}
             </Typography>
+            </Box>
+            
           </Grid>
           <Grid item xs={12}>
-            <Box display="flex" alignItems="center" mb={1}>
-              <LocationOnOutlinedIcon sx={{ color: "primary.main", marginRight: 1 }} />
+            <Box display="flex" alignItems="center" mb={1} >
+              
               <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
                 Địa điểm
               </Typography>
             </Box>
+            <Box display="flex" alignItems="center" mb={1} paddingLeft={3}>
+            <LocationOnOutlinedIcon sx={{ color: "primary.main", marginRight: 1 }} />
             <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' }}>
               {event.eventLocation}
             </Typography>
+            </Box>          
           </Grid>
           <Grid item xs={12}>
-            <Box display="flex" alignItems="center" mb={1}>
-             
-              <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
-                Chủ sự kiện
-              </Typography>
-            </Box>
-            
-            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' , paddingLeft:'30px', alignItems:'center'}}>
-            <SupervisedUserCircleOutlinedIcon sx={{ color: "primary.main", marginRight: 1, alignItems:'center',justifyContent:'center' }} />
+          <Box display="flex" alignItems="center" mb={1}>
+            <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
+              Chủ sự kiện
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems="center" mb={1} paddingLeft={3}>
+            <SupervisedUserCircleOutlinedIcon
+              sx={{
+                color: "primary.main",
+                marginRight: 1,
+                fontSize: 24, 
+              }}
+            />
+            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' }}>
               {event.eventHost}
             </Typography>
+          </Box>          
           </Grid>
           <Grid item xs={12}>
-            <Box display="flex" alignItems="center" mb={1}>
-              <DescriptionIcon sx={{ color: "primary.main", marginRight: 1 }} />
-              <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
-                Mô tả
-              </Typography>
-            </Box>
-            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.6' }}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
+              Mô tả
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems="flex-start" mb={1} paddingLeft={3}>
+            <DescriptionIcon sx={{ color: "primary.main", marginRight: 1, fontSize: 24 }} />
+            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.9' }}>
               {event.eventDescription}
             </Typography>
+          </Box>  
           </Grid>
         </Grid>
       </CardContent>

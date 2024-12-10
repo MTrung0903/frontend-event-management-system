@@ -144,7 +144,6 @@ const ProviderList = () => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleViewDetail}>Chi tiết</MenuItem>
-        <MenuItem onClick={handleEdit}>Cập nhật</MenuItem>
         <MenuItem onClick={handleDelete}>Xóa</MenuItem>
       </Menu>
       <Dialog

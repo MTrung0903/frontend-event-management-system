@@ -17,7 +17,7 @@ import {
   Box,
 } from "@mui/material";
 
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -27,6 +27,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [members, setMembers] = useState([]);
+  const manId = localStorage.getItem("userId")
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -34,20 +35,21 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
 
   const handleAddMember = async (teamId, employeeId) => {
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `http://localhost:8080/man/team/${teamId}/add/${employeeId}`,
+        {},
         {
-          method: "POST",
           headers: {
             Authorization: localStorage.getItem("token"),
           },
         }
       );
-      if (response.statusCode === 0) {
-        console.log(response.data.data)
+      console.log(response.data);
+      if (response.data.data === true) {
+        console.log(response.data.data);
         alert("Member added successfully!");
         setOpenDialog(false);
-        onTeamUpdate(); 
+        onTeamUpdate();
       } else {
         alert("Failed to add member!");
       }
@@ -65,7 +67,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
         },
       }
     );
-    return response.data; 
+    return response.data;
   };
 
   const handleDeleteMember = async (teamId, employeeId) => {
@@ -74,9 +76,9 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
       const response = await deleteTeamMember(teamId, employeeId);
       if (response.status === "success") {
         alert(response.message);
-        onTeamUpdate(); 
+        onTeamUpdate();
       } else {
-        alert(response.message); 
+        alert(response.message);
       }
     } catch (error) {
       console.error("Error deleting member:", error);
@@ -85,16 +87,18 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
       setLoading(false);
     }
   };
-  
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/man/employee/${eventId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8080/man/employee/${manId}/member/${eventId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const result = await response.json();
       if (result.statusCode === 0 && result.data) {
         setMembers(result.data);
@@ -129,24 +133,27 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Button
-          type="submit"
-          variant="contained"
-          onClick={handleOpenDialog}
-          style={{
-            backgroundColor: "#3f51b5",
-            color: "#ffffff",
-            borderRadius: "20px",
-            padding: "8px 16px",
-            marginLeft: "1010px",
-          }}
-        >
-          Thêm thành viên
-        </Button>
-        <Table>
+      <TableContainer component={Paper} sx={{ boxShadow: "none" }}>
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            type="submit"
+            variant="contained"
+            onClick={handleOpenDialog}
+            style={{
+              backgroundColor: "#3f51b5",
+              color: "#ffffff",
+             
+              padding: "8px 16px",
+            }}
+          >
+            Thêm thành viên
+          </Button>
+        </Box>
+
+        <Table sx={{ marginTop: "5px" }}>
           <TableHead>
             <TableRow>
+              <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Address</TableCell>
@@ -157,6 +164,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
           <TableBody>
             {employees.map((employee) => (
               <TableRow key={employee.id}>
+                <TableCell>{employee.id}</TableCell>
                 <TableCell>{employee.fullName}</TableCell>
                 <TableCell>{employee.email}</TableCell>
                 <TableCell>{employee.address}</TableCell>

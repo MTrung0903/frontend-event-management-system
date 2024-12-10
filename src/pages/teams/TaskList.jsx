@@ -22,7 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -307,7 +307,7 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
   };
 
   return (
-    <TableContainer component={Paper} style={{ backgroundColor: "#f9f9f9" }}>
+    <TableContainer component={Paper} style={{  boxShadow:"none" }} m>
       <Table>
         <TableHead>
           <TableRow>
@@ -315,6 +315,7 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
             <TableCell>Description</TableCell>
             <TableCell>Deadline</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Assigned</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -325,6 +326,7 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
               <TableCell>{subTask.subTaskDesc}</TableCell>
               <TableCell>{subTask.subTaskDeadline}</TableCell>
               <TableCell>{subTask.status}</TableCell>
+              <TableCell>{subTask.employeeId}</TableCell>
               <TableCell>
                 <IconButton onClick={() => handleUpdateSubtaskClick(subTask)}>
                   <EditOutlinedIcon />
@@ -631,25 +633,29 @@ function TaskList({ tasks, setTasks, teamId }) {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <Button
+    <TableContainer component={Paper}  sx={{ 
+      boxShadow: "0 0px 2px rgba(0, 0, 0, 0.1)"
+    }}>
+      <Box display="flex" justifyContent="flex-end">
+        <Button
             type="submit"
             variant="contained"
             onClick={handleAddTask}
             style={{
               backgroundColor: "#3f51b5",
               color: "#ffffff",
-              borderRadius: "20px",
+             
               padding: "8px 16px",
-              marginLeft: "20px",
-              marginTop: "10px",
-              marginBottom: "10px",
+              marginRight:"50px"
             }}
           >
             Add Task
           </Button>
+        </Box>
+      <Table>
+        <TableHead>
+        
+         
           {showDialog && (
             <AddTaskDialog
               onClose={() => setShowDialog(false)}
@@ -680,10 +686,11 @@ function TaskList({ tasks, setTasks, teamId }) {
                     onClick={() =>
                       handleDeleteTask(task.taskId, task.taskStatus)
                     }
+                    title="Delete Subtask"
                   >
                     <DeleteOutlineOutlinedIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleUpdateTaskClick(task)}>
+                  <IconButton onClick={() => handleUpdateTaskClick(task)} title="Edit Subtask">
                     <EditOutlinedIcon />
                   </IconButton>
                   {updateTaskDialogOpen && currentTask && (
@@ -693,20 +700,17 @@ function TaskList({ tasks, setTasks, teamId }) {
                       onSave={handleSaveUpdatedTask}
                     />
                   )}
-                  <Button
-                    type="submit"
-                    variant="contained"
+                 <IconButton
                     onClick={() => handleOpenDialog(task.taskId)}
                     style={{
-                      backgroundColor: "#3f51b5",
-                      color: "#ffffff",
-                      borderRadius: "20px",
-                      padding: "8px 16px",
+                      cursor: "pointer",
+                      padding: "8px", 
                       marginLeft: "10px",
                     }}
+                    title="Add Subtask"
                   >
-                    Add Subtask
-                  </Button>
+                    <PlaylistAddIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
               <TableRow>
