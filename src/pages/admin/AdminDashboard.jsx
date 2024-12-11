@@ -4,21 +4,54 @@ import { Box, Grid, Typography, Paper, Card, CardContent } from "@mui/material";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import EventTable from "./EventTable";
-
+import axios from "axios";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+
 const AdminDashboard = () => {
+  const [eventTotal, setEventTotal] = useState(0);
+  const [device, setDevice] = useState(0);
+  const [employee, setEmployee] = useState(0);
+  const [eventCompleted, setEventCompleted] = useState(null);
+  const [eventCancel, setEventCancel] = useState(null);
+  const [sponsor, setSponsor] = useState(null);
+  const [events, setEvent] = useState(null);
+  const fetchAPI = async () => {
+    try {
+        const response = await axios.get("http://localhost:8080/admin/events/overview", {
+            headers: {
+                Authorization: localStorage.getItem("token"),
+            },
+        });
+        const data = response.data.data;
+        setEventTotal(data.totalEvents);
+        setDevice(data.totalDevices);
+        setEmployee(data.totalEmployees);
+        setEventCompleted(data.cntCompleted);
+        setEventCancel(data.cntCancel);
+        setSponsor(data.cntSponsor);
+        setEvent(data.listEvent);
+        //console.log(response.data.data)
+        
+        //console.log("Data for dropdown:", sponsorshipLevels);
+    } catch (error) {
+        console.error("Error fetching sponsorship levels:", error);
+    }
+  };
+  useEffect(() => {
+    fetchAPI();
+  }, []);
   const eventData = {
     labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
     datasets: [
       {
         label: "Sự kiện đã hoàn thành",
-        data: [12, 14, 3, 5, 2, 3, 4, 8, 11, 5, 9, 13],
+        data: eventCompleted,
         backgroundColor: "rgba(75, 192, 192, 0.6)",
       },
       {
         label: "Sự kiện bị hủy",
-        data: [2, 3, 1, 4, 2, 0, 0, 3, 1, 1, 2, 0],
+        data: eventCancel,
         backgroundColor: "rgba(255, 99, 132, 0.6)",
       },
     ],
@@ -29,7 +62,7 @@ const AdminDashboard = () => {
     datasets: [
       {
         label: "Số nhà tài trợ",
-        data: [5, 6, 4, 7, 3, 5, 6, 8, 4, 6, 7, 5],
+        data: sponsor,
         backgroundColor: "rgba(153, 102, 255, 0.6)",
       },
     ],
@@ -50,7 +83,7 @@ const AdminDashboard = () => {
                 Số sự kiện đã hoàn thành
               </Typography>
               <Typography variant="h3" color="primary">
-                12
+                {eventTotal}
               </Typography>
             </Box>
           </Paper>
@@ -62,7 +95,7 @@ const AdminDashboard = () => {
                 Số thiết bị đang sử dụng
               </Typography>
               <Typography variant="h3" color="secondary">
-                30
+               {device}
               </Typography>
             </Box>
           </Paper>
@@ -74,7 +107,7 @@ const AdminDashboard = () => {
                 Tổng số nhân viên
               </Typography>
               <Typography variant="h3" color="success.main">
-                50
+                {employee}
               </Typography>
             </Box>
           </Paper>
@@ -109,7 +142,8 @@ const AdminDashboard = () => {
       <Typography variant="h5" gutterBottom>
         Quản lý sự kiện
       </Typography>
-      <EventTable />
+      <EventTable events={events || []} />
+
     </Box>
   );
 };
