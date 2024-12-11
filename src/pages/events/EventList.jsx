@@ -3,14 +3,11 @@ import axios from "axios";
 import { Dialog, DialogTitle, DialogContentText, DialogContent, DialogActions, Card, CardContent, Typography, CardMedia, Grid, Box, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import InfoOutlined from '@mui/icons-material/InfoOutlined';
-import { display } from "@mui/system";
-
-import EditOutlined from '@mui/icons-material/EditOutlined';
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CloseIcon from '@mui/icons-material/Close'
+import './event.css'
 const EventList = ({ setSelectedEvent }) => {
     console.log(setSelectedEvent);
     const [events, setEvents] = useState([]);
@@ -35,10 +32,12 @@ const EventList = ({ setSelectedEvent }) => {
             const payload = JSON.parse(atob(token.split(".")[1]));
             const roles = payload.roles || [];
             const userId = payload.userId || null;
-
+            if (userId) {
+                localStorage.setItem("userId", userId);
+              }
             if (roles.some((role) => ["ROLE_MANAGER", "ROLE_ADMIN"].includes(role))) {
                 axios
-                    .get("http://localhost:8080/man/event", {
+                    .get(`http://localhost:8080/man/event/list-event/${userId}`, {
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: token,
@@ -104,7 +103,6 @@ const EventList = ({ setSelectedEvent }) => {
     }, [events]);
 
     const handleEventClick = (event) => {
-        //console.log(`Navigating to: /events/${event.eventId}`);
         setSelectedEvent(event);
         navigate(`/events/${event.eventId}`);
     };
@@ -112,7 +110,7 @@ const EventList = ({ setSelectedEvent }) => {
         navigate("/event/create");
     };
     const handleCancelDelete = () => {
-        setConfirmOpen(false); // Đóng hộp thoại khi người dùng chọn "No"
+        setConfirmOpen(false); 
     };
     const handleDelete = async () => {
         setConfirmOpen(true);
@@ -124,19 +122,19 @@ const EventList = ({ setSelectedEvent }) => {
                     Authorization: localStorage.getItem("token"),
                 },
             });
-            // Xóa thành công, gọi lại API để tải danh sách mới
+            
             fetchEvents();
             alert("Xóa sự kiện thành công!");
         } catch (error) {
             console.error("Error deleting event:", error);
             alert("Xóa thất bại. Thử lại sau");
         } finally {
-            setConfirmOpen(false); // Đóng hộp thoại sau khi xử lý
+            setConfirmOpen(false);
         }
     };
 
     return (
-        <Box sx={{ padding: 2 }}>
+        <Box sx={{ padding: 2}}>
             <Box display="flex" justifyContent="space-between" alignItems="center" >
                 <TextField
                     placeholder="Tìm kiếm sự kiện"
@@ -146,19 +144,19 @@ const EventList = ({ setSelectedEvent }) => {
                     sx={{
                         width: "300px",
                         "& .MuiInputBase-root": {
-                            height: "45px", // Điều chỉnh chiều cao input
+                            height: "45px",
                         },
                         "& .MuiInputLabel-root": {
-                            lineHeight: "45px", // Căn chỉnh nhãn
+                            lineHeight: "45px",
                         },
-                        marginLeft: 1
+                        
                     }}
                 />
                 <div
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "10px", // Khoảng cách giữa các phần tử
+                        gap: "10px", 
                     }}
                 >
                     <FormControl fullWidth style={{ minWidth: "150px" }}>
@@ -191,15 +189,19 @@ const EventList = ({ setSelectedEvent }) => {
                         <Card
                             onClick={() => handleEventClick(event)}
                             sx={{
-                                width: '350px',  // Chiều rộng cố định
-                                height: '330px', // Chiều cao cố định
-                                margin: 'auto',  // Căn giữa card trong grid
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Đổ bóng
+                                width: '380px',  
+                                height: '350px', 
+                                margin: 'auto',  
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
                                 transition: 'transform 0.3s',
                                 '&:hover': {
-                                    transform: 'scale(1.05)', // Hiệu ứng phóng to khi hover
+                                    transform: 'scale(1.05)', 
                                 },
-                                position: 'relative', // Để căn option ở góc
+                                position: 'relative',
+                                paddingLeft:'8px',
+                                paddingRight:'8px',
+                                paddingTop:'4px'
+
                             }}
                         >
                             {/* Event Image */}
@@ -208,6 +210,11 @@ const EventList = ({ setSelectedEvent }) => {
                                 height="180"
                                 image={imageUrls[event.eventId] || defaultImage}
                                 alt={`${event.eventName}'s avatar`}
+                                sx={{
+                                    borderRadius: '4px', 
+                                    overflow: 'hidden',
+                                }}
+                              
                             />
 
                             {/* Nội dung */}
@@ -233,6 +240,11 @@ const EventList = ({ setSelectedEvent }) => {
                                         fontSize: '12px',
                                         fontStyle: 'italic',
                                         marginBottom: '12px',
+                                        display: '-webkit-box',
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        WebkitLineClamp: 2, // Hiển thị tối đa 2 dòng
                                     }}
                                 >
                                     {event.eventDescription}
@@ -244,23 +256,13 @@ const EventList = ({ setSelectedEvent }) => {
                                     <Typography
                                         variant="body2"
                                         color="text.secondary"
-                                        sx={{ fontSize: '13px' }}
+                                        sx={{ fontSize: '12px',}}
                                     >
                                         <strong>Địa điểm:</strong> {event.eventLocation}
                                     </Typography>
                                 </Box>
 
-                                {/* Event Details */}
-                                <Box display="flex" alignItems="center">
-                                    <InfoOutlined sx={{ fontSize: 18, marginRight: 1 }} />
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                        sx={{ fontSize: '13px' }}
-                                    >
-                                        <strong>Chi tiết:</strong> {event.eventDetail}
-                                    </Typography>
-                                </Box>
+                              
                             </CardContent>
 
                             {/* Option Buttons */}

@@ -9,6 +9,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import SpeakerAdd from './SpeakerAdd';
+import Swal from 'sweetalert2';
+
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:8080/man/speaker', 
@@ -78,17 +80,27 @@ const SpeakerList = () => {
     const handleDelete = async () => {
         try {
           await axiosInstance.delete(`/${selectedSpeakerId}`);
-          alert("Sponsor deleted successfully");
+          Swal.fire({
+            title: "Delete",
+            text: "Xóa diễn giả thành công",
+            icon: "success",
+            confirmButtonText: "OK"
+          });
       
           const response = await axiosInstance.get();
           setSpeakers(response.data.data || []);
          
         } catch (error) {
           console.error("Error deleting sponsor:", error);
-          alert("Failed to delete sponsor. Please try again later.");
+          Swal.fire({
+            title: "Delete",
+            text: "Xóa diễn giả thất bại",
+            icon: "error",
+            confirmButtonText: "OK"
+          });
         } finally {
         }
-        handleMenuClose(); // Đóng menu khi hoàn thành thao tác
+        handleMenuClose();
       };
 
     // Fetch image with authentication headers
@@ -146,7 +158,15 @@ const SpeakerList = () => {
             <Grid container spacing={2}>
                 {filteredSpeakers.map((speaker) => (
                     <Grid item xs={12} sm={6} md={4} key={speaker.id}>
-                        <Card sx={{ position: 'relative' }}>
+                        <Card sx={{ position: 'relative' ,
+                        minHeight:'370px',
+
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between", // Nội dung cách đều trên-dưới
+                        overflow: "hidden", // Ẩn nội dung thừa
+
+                        }}>
                             {/* Dots Menu */}
                             <div style={{ position: 'relative' }}>
                                 <IconButton

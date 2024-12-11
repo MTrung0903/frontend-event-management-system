@@ -13,9 +13,9 @@ import {
 import {  Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SponsorAdd from "./SponsorAdd";
-
+import Swal from 'sweetalert2';
 
 const defaultImage = "path/to/default/image.jpg"; 
 const axiosInstance = axios.create({
@@ -126,20 +126,31 @@ const SponsorList = () => {
   const handleDelete = async () => {
     try {
       await axiosInstance.delete(`/${selectedSponsor.id}`);
-      alert("Sponsor deleted successfully");
 
-      // Fetch lại danh sách sponsors sau khi xóa thành công
-      setLoading(true); // Hiển thị loading trong khi đợi dữ liệu mới
+      Swal.fire({
+        title: "Delete",
+        text: "Xóa thành công",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
+     
+      setLoading(true);
       const response = await axiosInstance.get();
       setSponsors(response.data.data || []);
       setFilteredSponsors(response.data.data || []);
     } catch (error) {
       console.error("Error deleting sponsor:", error);
-      alert("Failed to delete sponsor. Please try again later.");
+
+      Swal.fire({
+        title: "Delete",
+        text: "Xóa thất bại. Hãy thử lại",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     } finally {
-      setLoading(false); // Kết thúc trạng thái loading
+      setLoading(false); 
     }
-    handleMenuClose(); // Đóng menu khi hoàn thành thao tác
+    handleMenuClose(); 
   };
 
   const columns = [

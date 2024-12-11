@@ -22,9 +22,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 export const createTask = async (task) => {
   const response = await axios.post(`http://localhost:8080/man/task`, task, {
@@ -32,6 +33,7 @@ export const createTask = async (task) => {
   });
   return response.data;
 };
+
 export const fetchEmployees = async (teamId) => {
   try {
     const response = await axios.get(
@@ -49,6 +51,7 @@ export const fetchEmployees = async (teamId) => {
     throw error;
   }
 };
+
 export const deleteTask = async (taskId) => {
   try {
     const response = await axios.delete(
@@ -61,32 +64,7 @@ export const deleteTask = async (taskId) => {
     throw error;
   }
 };
-export const handleDeleteTask = async (taskId, status, onTaskUpdate) => {
-  try {
-    if (status?.toLowerCase() === "done") {
-      alert("Không thể xóa các task đã hoàn thành!");
-      return;
-    }
-    const isConfirmed = window.confirm(
-      "Lưu ý: Các subtask của task hiện tại cũng sẽ bị xóa. Bạn muốn thực hiện thao tác này?"
-    );
-    if (!isConfirmed) return;
-    const response = await deleteTask(taskId);
-    if (response.statusCode === 0) {
-      alert("Xóa task thành công!");
-      onTaskUpdate((prevTasks) =>
-        prevTasks.filter((task) => task.taskId !== taskId)
-      );
-    } else {
-      alert(
-        `Không thể xóa task. Lỗi: ${response.message || "Không rõ lý do."}`
-      );
-    }
-  } catch (error) {
-    console.error("Error deleting task:", error);
-    alert("Đã xảy ra lỗi khi xóa task. Vui lòng thử lại sau.");
-  }
-};
+
 export const deleteSubTask = async (subtakId) => {
   try {
     const response = await axios.delete(
@@ -99,36 +77,7 @@ export const deleteSubTask = async (subtakId) => {
     throw error;
   }
 };
-export const handleDeleteSubtask = async (
-  subtaskId,
-  status,
-  onSubtaskUpdate
-) => {
-  try {
-    if (status?.toLowerCase() === "done") {
-      alert("Không thể xóa các subtask đã hoàn thành!");
-      return;
-    }
-    const isConfirmed = window.confirm(
-      "Bạn có chắc chắn muốn xóa subtask này?"
-    );
-    if (!isConfirmed) return;
-    const response = await deleteSubTask(subtaskId);
-    if (response.statusCode === 0) {
-      alert("Xóa subtask thành công!");
-      onSubtaskUpdate((prevSubtasks) =>
-        prevSubtasks.filter((subtask) => subtask.subTaskId !== subtaskId)
-      );
-    } else {
-      alert(
-        `Không thể xóa subtask. Lỗi: ${response.message || "Không rõ lý do"}`
-      );
-    }
-  } catch (error) {
-    console.error("Error deleting subtask:", error);
-    alert("Đã xảy ra lỗi khi xóa subtask. Vui lòng thử lại sau.");
-  }
-};
+
 export const saveSubtask = async (taskId, formData) => {
   const formattedTaskDl = new Date(formData.subTaskDeadline)
     .toISOString()
@@ -141,13 +90,14 @@ export const saveSubtask = async (taskId, formData) => {
       formData,
       { headers: { Authorization: localStorage.getItem("token") } }
     );
-    console.log("Subtask saved successfully:", response.data);
+    //console.log("Subtask saved successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error saving subtask:", error);
     throw error;
   }
 };
+
 export const updateTask = async (task) => {
   const response = await axios.put(`http://localhost:8080/man/task`, task, {
     headers: {
@@ -158,6 +108,11 @@ export const updateTask = async (task) => {
 };
 
 export const updateSubtask = async (subtask) => {
+  const formattedTaskDl = new Date(subtask.subTaskDeadline)
+  .toISOString()
+  .slice(0, 19)
+  .replace("T", " ");
+  subtask.subTaskDeadline = formattedTaskDl;
   const response = await axios.put(
     `http://localhost:8080/man/subtask`,
     subtask,
@@ -167,8 +122,9 @@ export const updateSubtask = async (subtask) => {
       },
     }
   );
-  return response.data.data;
+  return response.data;
 };
+
 const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
   const [subTaskName, setSubTaskName] = useState(subtask.subTaskName);
   const [subTaskDesc, setSubTaskDesc] = useState(subtask.subTaskDesc);
@@ -178,6 +134,7 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
 
   const handleSave = async () => {
     try {
+      
       const updatedSubtask = {
         ...subtask,
         subTaskName,
@@ -186,13 +143,51 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
         status,
         employeeId,
       };
-      await updateSubtask(updatedSubtask);
+      const response = await updateSubtask(updatedSubtask);
+      if (response.data === true) {
+        Swal.fire({
+          title: "Success",
+          text: response.msg || "",
+          icon: "success",
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
       onSave(updatedSubtask);
-      alert("Subtask updated successfully!");
+      }
+     else {
+      Swal.fire({
+        title: "Error",
+        text: response.msg || "",
+        icon: "error",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
+    }
       onClose();  
     } catch (error) {
       console.error("Error updating subtask:", error);
-      alert("Failed to update subtask. Please try again.");
+      Swal.fire({
+        title: "Update",
+        text: "Cập nhật subtask thất bại. Vui lòng thử lại",
+        icon: "error",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
     }
   };
 
@@ -262,7 +257,6 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
   );
 };
 
-
 const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
   const [currentSubtask, setCurrentSubtask] = useState(null);
 
@@ -286,28 +280,85 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
   const handleDeleteSubtask = async (subtaskId, status) => {
     try {
       if (status?.toLowerCase() === "done") {
-        alert("Không thể xóa các subtask đã hoàn thành!");
+        Swal.fire({
+          icon: 'error',
+          title:'Delete',
+          text: 'Không thể xóa các subtask đã hoàn thành!',
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
         return;
       }
-      const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa subtask này?");
+  
+      const { isConfirmed } = await Swal.fire({
+        title:'Delete',
+        text: 'Bạn có chắc chắn muốn xóa subtask này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Hủy',
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
+  
       if (!isConfirmed) return;
+  
       const response = await deleteSubTask(subtaskId);
+  
       if (response.statusCode === 0) {
-        alert("Xóa subtask thành công!");
+        Swal.fire({
+          icon: 'success',
+          title:'Delete',
+          text: 'Xóa subtask thành công!',
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
         onSubtaskUpdate((prevSubtasks) =>
           prevSubtasks.filter((subtask) => subtask.subTaskId !== subtaskId)
         );
       } else {
-        alert(`Không thể xóa subtask. Lỗi: ${response.message || "Không rõ lý do"}`);
+        Swal.fire({
+          icon: 'error',
+          title:'Delete',
+          text: `Không thể xóa subtask. Lỗi: ${response.message || "Không rõ lý do"}`,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
       }
     } catch (error) {
       console.error("Error deleting subtask:", error);
-      alert("Đã xảy ra lỗi khi xóa subtask. Vui lòng thử lại sau.");
+      Swal.fire({
+        icon: 'error',
+        title:'Delete',
+        text: 'Đã xảy ra lỗi khi xóa subtask. Vui lòng thử lại sau.',
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
     }
   };
 
   return (
-    <TableContainer component={Paper} style={{ backgroundColor: "#f9f9f9" }}>
+    <TableContainer component={Paper} style={{  boxShadow:"none" }} m>
       <Table>
         <TableHead>
           <TableRow>
@@ -315,6 +366,7 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
             <TableCell>Description</TableCell>
             <TableCell>Deadline</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell>Assigned</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -325,6 +377,7 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
               <TableCell>{subTask.subTaskDesc}</TableCell>
               <TableCell>{subTask.subTaskDeadline}</TableCell>
               <TableCell>{subTask.status}</TableCell>
+              <TableCell>{subTask.employeeId}</TableCell>
               <TableCell>
                 <IconButton onClick={() => handleUpdateSubtaskClick(subTask)}>
                   <EditOutlinedIcon />
@@ -352,6 +405,7 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
     </TableContainer>
   );
 };
+
 const AddTaskDialog = ({ onClose, onSave, eventId, teamId }) => {
   const [taskName, setTaskName] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
@@ -372,13 +426,58 @@ const AddTaskDialog = ({ onClose, onSave, eventId, teamId }) => {
         eventId: parseInt(eventId),
         teamId,
       };
-      const createdTask = await createTask(newTask);
-      onSave((prevTasks) => [...prevTasks, createdTask]);
-      alert("Task saved successfully!");
-      onClose();
+      const response = await createTask(newTask);
+
+      if (response.data) {
+        Swal.fire({
+          title: "Success",
+          text: response.msg || "Thêm task thành công",
+          icon: "success",
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
+  
+        // Cập nhật danh sách task
+        onSave((prevTasks) => [...prevTasks, newTask]);
+  
+        // Đóng modal
+        onClose();
+      } else {
+         // Đóng modal
+         onClose();
+        Swal.fire({
+          title: "Error",
+          text: response.msg || "Không thể thêm task",
+          icon: "error",
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
+      }
     } catch (error) {
       console.error("Error saving task:", error);
-      alert("Failed to save task. Please try again.");
+     
+      Swal.fire({
+        title: "Delete task",
+        text: "Xóa task thất bại. Hãy thử lại",
+        icon: "error",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
     }
   };
 
@@ -433,6 +532,7 @@ const AddTaskDialog = ({ onClose, onSave, eventId, teamId }) => {
     </Dialog>
   );
 };
+
 const UpdateTaskDialog = ({ task, onClose, onSave }) => {
   const [taskName, setTaskName] = useState(task.taskName);
   const [taskDesc, setTaskDesc] = useState(task.taskDesc);
@@ -450,11 +550,33 @@ const UpdateTaskDialog = ({ task, onClose, onSave }) => {
       };
       await updateTask(updatedTask);
       onSave(updatedTask);
-      alert("Task updated successfully!");
+      Swal.fire({
+        title: "Update",
+        text: "Cập nhật task thành công",
+        icon: "success",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
       onClose();
     } catch (error) {
       console.error("Error updating task:", error);
-      alert("Failed to update task. Please try again.");
+      Swal.fire({
+        title: "Update",
+        text: "Cập nhật task thất bại. Hãy thử lại",
+        icon: "error",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
     }
   };
 
@@ -519,45 +641,96 @@ function TaskList({ tasks, setTasks, teamId }) {
   const [showDialog, setShowDialog] = useState(false);
   const handleSaveTask = (createdTask) => {
     setTasks((prevTasks) => [...prevTasks, createdTask]);
-    //alert("Task saved successfully!");
   };
 
   const handleDeleteTask = async (taskId, status) => {
     try {
       if (status?.toLowerCase() === "done") {
-        alert("Không thể xóa các task đã hoàn thành!");
+        Swal.fire({
+          icon: 'error',
+          title: 'Không thể xóa các task đã hoàn thành!',
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
         return;
       }
-      const isConfirmed = window.confirm(
-        "Lưu ý: Các subtask của task hiện tại cũng sẽ bị xóa. Bạn muốn thực hiện thao tác này?"
-      );
+  
+      const { isConfirmed } = await Swal.fire({
+        title: 'Lưu ý: Các subtask của task hiện tại cũng sẽ bị xóa. Bạn muốn thực hiện thao tác này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có',
+        cancelButtonText: 'Hủy',
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
+  
       if (!isConfirmed) return;
+  
       const response = await deleteTask(taskId);
+  
       if (response.statusCode === 0) {
-        alert("Xóa task thành công!");
+        Swal.fire({
+          icon: 'success',
+          title: 'Xóa task thành công!',
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
         setTasks((prevTasks) =>
           prevTasks.filter((task) => task.taskId !== taskId)
         );
       } else {
-        alert(
-          `Không thể xóa task. Lỗi: ${response.message || "Không rõ lý do."}`
-        );
+        Swal.fire({
+          icon: 'error',
+          title: `Không thể xóa task. Lỗi: ${response.message || "Không rõ lý do."}`,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
       }
     } catch (error) {
       console.error("Error deleting task:", error);
-      alert("Đã xảy ra lỗi khi xóa task. Vui lòng thử lại sau.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Đã xảy ra lỗi khi xóa task. Vui lòng thử lại sau.',
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
     }
   };
+
   const handleAddTask = () => {
     setShowDialog(true);
   };
+
   const handleExpandClick = (taskId) => {
     setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
   };
+
   const handleOpenDialog = (taskId) => {
     setFormData((prev) => ({ ...prev, taskId }));
     setOpenDialog(true);
   };
+
   useEffect(() => {
     if (teamId) {
       const getEmployees = async () => {
@@ -571,6 +744,7 @@ function TaskList({ tasks, setTasks, teamId }) {
       getEmployees();
     }
   }, [teamId]);
+
   const [formData, setFormData] = useState({
     subTaskName: "",
     subTaskDesc: "",
@@ -579,6 +753,7 @@ function TaskList({ tasks, setTasks, teamId }) {
     employeeId: "",
     taskId: null,
   });
+
   const handleCloseDialog = () => {
     setFormData({
       subTaskName: "",
@@ -590,31 +765,76 @@ function TaskList({ tasks, setTasks, teamId }) {
     });
     setOpenDialog(false);
   };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const response = await saveSubtask(formData.taskId, formData);
+  
+      // Đóng dialog sau khi gửi thành công
       handleCloseDialog();
+  
+      // Xử lý thông báo dựa trên response từ backend
       if (response.data === true) {
-        alert("Subtask saved successfully!");
+        Swal.fire({
+          title: "Success",
+          text: response.msg || "Tạo subtask thành công",
+          icon: "success",
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
+  
+        // Cập nhật danh sách subtasks cho task hiện tại
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.taskId === formData.taskId
-              ? { ...task, listSubTasks: [...task.listSubTasks, response.data] }
+              ? { ...task, listSubTasks: [...task.listSubTasks, formData] }
               : task
           )
         );
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: response.msg || "Không thể tạo subtask",
+          icon: "error",
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
+        });
       }
     } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Đã xảy ra lỗi khi tạo subtask.",
+        icon: "error",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
       console.error("Error saving subtask:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const [currentTask, setCurrentTask] = useState(null);
   const [updateTaskDialogOpen, setUpdateTaskDialogOpen] = useState(false);
@@ -631,25 +851,19 @@ function TaskList({ tasks, setTasks, teamId }) {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
+    <TableContainer component={Paper}  sx={{ boxShadow: "0 0px 2px rgba(0, 0, 0, 0.1)"}}>
+      <Box display="flex" justifyContent="flex-end">
           <Button
-            type="submit"
-            variant="contained"
-            onClick={handleAddTask}
-            style={{
-              backgroundColor: "#3f51b5",
-              color: "#ffffff",
-              borderRadius: "20px",
-              padding: "8px 16px",
-              marginLeft: "20px",
-              marginTop: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            Add Task
+              type="submit"
+              variant="contained"
+              onClick={handleAddTask}
+              style={{backgroundColor: "#3f51b5",color: "#ffffff",padding: "8px 16px", marginRight:"50px"}}> 
+              Add Task
           </Button>
+        </Box>
+      {/*Bảng task*/}
+      <Table>
+        <TableHead>  
           {showDialog && (
             <AddTaskDialog
               onClose={() => setShowDialog(false)}
@@ -677,13 +891,12 @@ function TaskList({ tasks, setTasks, teamId }) {
                     <ExpandMoreIcon />
                   </IconButton>
                   <IconButton
-                    onClick={() =>
-                      handleDeleteTask(task.taskId, task.taskStatus)
-                    }
+                    onClick={() =>handleDeleteTask(task.taskId, task.taskStatus)}
+                    title="Delete Subtask"
                   >
                     <DeleteOutlineOutlinedIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleUpdateTaskClick(task)}>
+                  <IconButton onClick={() => handleUpdateTaskClick(task)} title="Edit Subtask">
                     <EditOutlinedIcon />
                   </IconButton>
                   {updateTaskDialogOpen && currentTask && (
@@ -693,20 +906,17 @@ function TaskList({ tasks, setTasks, teamId }) {
                       onSave={handleSaveUpdatedTask}
                     />
                   )}
-                  <Button
-                    type="submit"
-                    variant="contained"
+                 <IconButton
                     onClick={() => handleOpenDialog(task.taskId)}
                     style={{
-                      backgroundColor: "#3f51b5",
-                      color: "#ffffff",
-                      borderRadius: "20px",
-                      padding: "8px 16px",
+                      cursor: "pointer",
+                      padding: "8px", 
                       marginLeft: "10px",
                     }}
+                    title="Add Subtask"
                   >
-                    Add Subtask
-                  </Button>
+                    <PlaylistAddIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
               <TableRow>

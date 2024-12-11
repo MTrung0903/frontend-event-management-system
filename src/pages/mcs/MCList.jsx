@@ -115,7 +115,14 @@ const McList = () => {
         <Grid container spacing={3}>
           {mcList.map((mc) => (
             <Grid item xs={12} sm={6} md={4} key={mc.mcID}>
-              <Card>
+              <Card   sx={{
+                  minHeight:'300px',
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between", // Nội dung cách đều trên-dưới
+                  overflow: "hidden", // Ẩn nội dung thừa
+                }}
+              >
                 <Box sx={{ position: "relative" }}>
                      {/* Delete icon */}
                   <DeleteOutlined
