@@ -1,7 +1,8 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from "@mui/material";
-
-const EventTable = ({events}) => {
+import { useNavigate } from "react-router-dom";
+const EventTable = ({setSelectedEvent, events}) => {
+  const navigate = useNavigate();
   const formatDate = (date) => {
     return new Date(date).toLocaleString("vi-VN", {
       year: "numeric",
@@ -12,6 +13,11 @@ const EventTable = ({events}) => {
       hour12: true, // Chế độ 12 giờ (AM/PM)
     });
   };
+  const handleEventClick = (event) => {
+    //console.log(`Navigating to: /events/${event.eventId}`);
+    setSelectedEvent(event);
+    navigate(`/events/${event.eventId}`);
+};
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -27,14 +33,14 @@ const EventTable = ({events}) => {
         </TableHead>
         <TableBody>
           {events.map((event, index) => (
-            <TableRow key={event.id}>
+            <TableRow key={event.eventId}>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{event.eventName}</TableCell>
               <TableCell>{event.eventHost}</TableCell>
               <TableCell>{formatDate(event.eventStart)} - {formatDate(event.eventEnd)}</TableCell>
               <TableCell>{event.eventStatus}</TableCell>
               <TableCell>
-                <Button variant="contained" size="small" sx = {{backgroundColor:"#1c7ee3"}}>
+                <Button variant="contained" size="small" sx = {{backgroundColor:"#1c7ee3"}} onClick={() => handleEventClick(event)}>
                   Xem chi tiết
                 </Button>
               </TableCell>

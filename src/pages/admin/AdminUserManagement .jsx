@@ -18,17 +18,15 @@ import {
   MenuItem,
 } from "@mui/material";
 import axios from "axios";
-const AdminUserManagement = () => {
-  // State quản lý danh sách user
+import Swal from "sweetalert2";
 
-  const [openDialog1, setOpenDialog1] = useState(false);
-  const [openDialog2, setOpenDialog2] = useState(false);
+const AdminUserManagement = () => {
+  const [openDialogEmployee, setOpenDialogEmployee] = useState(false);
+  const [openDialogManager, setOpenDialogManager] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  // const [name, setName] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [role, setRole]  = useState("");
-  const [data, setData] = useState(null);
-  const [manager, setManager] = useState(null);
+  const [data, setData] = useState([]);
+  const [managers, setManagers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchAPI = async () => {
     try {
@@ -38,91 +36,272 @@ const AdminUserManagement = () => {
         },
       });
       setData(response.data.data);
-      //console.log(response.data.data)
-
-      //console.log("Data for dropdown:", sponsorshipLevels);
     } catch (error) {
-      console.error("Error fetching sponsorship levels:", error);
+      console.error("Error fetching users:", error);
     }
   };
-  useEffect(() => {
-    fetchAPI();
-  }, []);
-  // Mở form thêm hoặc chỉnh sửa user
-  const handleOpenDialog1 = async (user = null) => {
-    setCurrentUser(user);
+
+  const fetchManagers = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/admin/users", {
+      const response = await axios.get("http://localhost:8080/admin/managers", {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
       });
-      setData(response.data.data);
-      //console.log(response.data.data)
-
-      //console.log("Data for dropdown:", sponsorshipLevels);
+      setManagers(response.data.data);
     } catch (error) {
-      console.error("Error fetching sponsorship levels:", error);
+      console.error("Error fetching managers:", error);
     }
-    setOpenDialog1(true);
-  };
-  const handleOpenDialog2 = (user = null) => {
-    setCurrentUser(user);
-    setOpenDialog2(true);
   };
 
-  // Đóng form
+  useEffect(() => {
+    fetchAPI();
+    fetchManagers();
+  }, []);
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value.toLowerCase());
+  };
+
+  const handleOpenDialogEmployee = (user = null) => {
+    setCurrentUser(user);
+    setOpenDialogEmployee(true);
+  };
+
+  const handleOpenDialogManager = (user = null) => {
+    setCurrentUser(user);
+    setOpenDialogManager(true);
+  };
+
   const handleCloseDialog = () => {
     setCurrentUser(null);
-    setOpenDialog1(false);
-    setOpenDialog2(false);
+    setOpenDialogEmployee(false);
+    setOpenDialogManager(false);
   };
 
-  // Lưu thông tin user
-  const handleSaveUser = async () => {
-    try {
-      if (currentUser?.id) {
-        await axios.put(
-          "http://localhost:8080/admin/account/",
-          {
-            accountID: currentUser.id,
-            name: currentUser.name,
-            email: currentUser.email,
-
-          },
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
-      } else {
-        await axios.post(
-          "http://localhost:8080/admin/account",
-          {
-            name: currentUser.name,
-            email: currentUser.email,
-            
-          },
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
-      }
+  const handleSaveEmployee = async () => {
+    if (!currentUser?.name || !currentUser?.email || !currentUser?.phone || !currentUser?.manID) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng điền đầy đủ các trường.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+      return;
+    }
   
-      await fetchAPI(); // Gọi lại API để lấy danh sách mới
-      handleCloseDialog(); // Đóng form sau khi lưu
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(currentUser.email)) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Email không hợp lệ.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+      return;
+    }
+  
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(currentUser.phone)) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Số điện thoại không hợp lệ.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+    try {
+      await axios.post(
+        "http://localhost:8080/admin/account",
+        {
+          name: currentUser.name,
+          email: currentUser.email,
+          phone: currentUser.phone,
+          manID: currentUser.manID,
+          roles: ["EMPLOYEE"],
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      handleCloseDialog();
+      Swal.fire({
+        title: "Thông báo",
+        text: "Thêm thành công",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+      await fetchAPI();
+
     } catch (error) {
-      console.error("Error saving user:", error);
+      //handleCloseDialog();
+      Swal.fire({
+        title: "Thông báo",
+        text: "Email đã tồn tại",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
     }
   };
-  
 
-  // Xóa user
-  const handleDeleteUser = (id) => {
-    setUsers((prev) => prev.filter((user) => user.id !== id));
+  const handleSaveManager = async () => {
+    if (!currentUser?.name || !currentUser?.email || !currentUser?.phone || !currentUser?.manID) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Vui lòng điền đầy đủ các trường.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+      return;
+    }
+  
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(currentUser.email)) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Email không hợp lệ.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+      return;
+    }
+  
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(currentUser.phone)) {
+      Swal.fire({
+        title: "Thông báo",
+        text: "Số điện thoại không hợp lệ.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+      return;
+    }
+    try {
+      await axios.post(
+        "http://localhost:8080/admin/account",
+        {
+          name: currentUser.name,
+          email: currentUser.email,
+          phone: currentUser.phone,
+          roles: ["MANAGER", "EMPLOYEE"],
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      handleCloseDialog();
+      Swal.fire({
+        title: "Thông báo",
+        text: "Thêm thành công",
+        icon: "success",
+        confirmButtonText: "OK",
+        
+      });
+      await fetchAPI();
+
+    } catch (error) {
+      //handleCloseDialog();
+      Swal.fire({
+        title: "Thông báo",
+        text: "Email đã tồn tại",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
+      });
+    }
+  };
+
+  const handleBlock = async (id) => {
+    try {
+      await axios.put(
+        `http://localhost:8080/admin/account/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      await fetchAPI();
+    } catch (error) {
+      console.error("Error blocking account:", error);
+    }
   };
 
   return (
@@ -133,16 +312,29 @@ const AdminUserManagement = () => {
 
       {/* Tìm kiếm */}
       <Box display="flex" gap={2} mb={2} justifyContent={"space-between"}>
-        <TextField label="Tìm kiếm người dùng" variant="outlined" sx={{ width: "400px" }} />
-        <Box display="flex" gap={2} mb={2} justifyContent={"space-between"}>
-        <Button sx={{ backgroundColor: "#1c7ee3" }} variant="contained" onClick={() => handleOpenDialog1()}>
-          Thêm nhân viên
-        </Button >
-        <Button sx={{ backgroundColor: "#1c7ee3" }} variant="contained" onClick={() => handleOpenDialog2()}>
-          Thêm quản lý
-        </Button>
+        <TextField
+          label="Tìm kiếm người dùng"
+          variant="outlined"
+          sx={{ width: "400px" }}
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+        <Box display="flex" gap={2}>
+          <Button
+            sx={{ backgroundColor: "#1c7ee3" }}
+            variant="contained"
+            onClick={() => handleOpenDialogEmployee()}
+          >
+            Thêm nhân viên
+          </Button>
+          <Button
+            sx={{ backgroundColor: "#1c7ee3" }}
+            variant="contained"
+            onClick={() => handleOpenDialogManager()}
+          >
+            Thêm quản lý
+          </Button>
         </Box>
-       
       </Box>
 
       {/* Danh sách người dùng */}
@@ -153,45 +345,47 @@ const AdminUserManagement = () => {
               <TableCell>#</TableCell>
               <TableCell>Tên</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Số điện thoại</TableCell>
               <TableCell>Vai trò</TableCell>
               <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.filter((user) => !user.roles.includes("ADMIN")).map((user, index) => (
-              <TableRow key={user.accountID}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.roles.includes("MANAGER") ? "MANAGER" : "EMPLOYEE"}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleOpenDialog1(user)}
-                  >
-                    Sửa
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleDeleteUser(user.id)}
-                    sx={{ ml: 1 }}
-                  >
-                    Xóa
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {data
+              ?.filter((user) =>
+                !user.roles.includes("ADMIN") &&
+                (user.name.toLowerCase().includes(searchQuery) ||
+                  user.email.toLowerCase().includes(searchQuery) ||
+                  user.phone.toLowerCase().includes(searchQuery))
+              )
+              .map((user, index) => (
+                <TableRow key={user.accountID}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>
+                    {user.roles.includes("MANAGER") ? "MANAGER" : "EMPLOYEE"}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color={user.isActive ? "error" : "success"}
+                      onClick={() => handleBlock(user.accountID)}
+                      sx={{ ml: 1 }}
+                    >
+                      {user.isActive ? "Khóa tài khoản" : "Mở tài khoản"}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
-
         </Table>
       </TableContainer>
 
       {/* Form thêm/sửa người dùng */}
-      <Dialog open={openDialog1} onClose={handleCloseDialog}>
-        <DialogTitle>
-          {currentUser?.id ? "Chỉnh sửa nhân sự" : "Thêm nhân sự"}
-        </DialogTitle>
+      <Dialog open={openDialogEmployee} onClose={handleCloseDialog} sx={{ zIndex: 999 }}>
+        <DialogTitle>{currentUser?.manID ? "Chỉnh sửa nhân sự" : "Thêm nhân sự"}</DialogTitle>
         <DialogContent>
           <TextField
             placeholder="Tên"
@@ -210,7 +404,7 @@ const AdminUserManagement = () => {
             onChange={(e) =>
               setCurrentUser({ ...currentUser, email: e.target.value })
             }
-          />      
+          />
           <TextField
             placeholder="Phone"
             fullWidth
@@ -219,32 +413,35 @@ const AdminUserManagement = () => {
             onChange={(e) =>
               setCurrentUser({ ...currentUser, phone: e.target.value })
             }
-          />       
+          />
           <Select
             fullWidth
-            value={currentUser?.manId || ""}
+            value={currentUser?.manID || ""}
             onChange={(e) =>
-              setCurrentUser({ ...currentUser, manId: e.target.value })
+              setCurrentUser({ ...currentUser, manID: e.target.value })
             }
             displayEmpty
           >
             <MenuItem value="" disabled>
               Nhân viên thuộc quản lý
-            </MenuItem >
-            {managers.map((man) => (
-              <MenuItem value={man.manId}>`${man.fullName}`</MenuItem>
-            ))}
+            </MenuItem>
+            {managers &&
+              managers.map((man) => (
+                <MenuItem value={man.manID} key={man.manID}>
+                  {man.name}
+                </MenuItem>
+              ))}
           </Select>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Hủy</Button>
-          <Button onClick={handleSaveUser}>Lưu</Button>
+          <Button onClick={handleSaveEmployee}>Lưu</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openDialog2} onClose={handleCloseDialog}>
-        <DialogTitle>
-          {currentUser?.id ? "Chỉnh sửa nhân sự" : "Thêm nhân sự"}
-        </DialogTitle>
+
+      {/* Form thêm quản lý */}
+      <Dialog open={openDialogManager} onClose={handleCloseDialog} sx={{ zIndex: 999 }}>
+        <DialogTitle>Thêm quản lý</DialogTitle>
         <DialogContent>
           <TextField
             placeholder="Tên"
@@ -263,8 +460,7 @@ const AdminUserManagement = () => {
             onChange={(e) =>
               setCurrentUser({ ...currentUser, email: e.target.value })
             }
-          />   
-
+          />
           <TextField
             placeholder="Phone"
             fullWidth
@@ -273,11 +469,11 @@ const AdminUserManagement = () => {
             onChange={(e) =>
               setCurrentUser({ ...currentUser, phone: e.target.value })
             }
-          />         
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Hủy</Button>
-          <Button onClick={handleSaveUser}>Lưu</Button>
+          <Button onClick={handleSaveManager}>Lưu</Button>
         </DialogActions>
       </Dialog>
     </Box>

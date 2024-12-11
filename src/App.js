@@ -98,13 +98,13 @@ function App() {
                     </div>
                     <main className="main-content">
                       <Routes>
-                        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                        <Route path="/admin/dashboard" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
                         <Route path="/admin/service" element={<AdminDeviceManagement />} />
                         <Route path="/admin/user" element={<AdminUserManagement />} />
-                        <Route path="/home" element={<AdminDashboard />} />
-                        <Route path="/" element={<AdminDashboard />} />
-
-                        <Route path="" element={<AdminDashboard/>} />
+                        <Route path="/home" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
+                        <Route path="/" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
+                        <Route path="/events/:eventId" element={<EventDetail />} />
+                        <Route path="" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
                       </Routes>
                     </main>
                   </div>
@@ -186,7 +186,7 @@ function App() {
                     </div>
                     <main className="main-content">
                       <Routes>
-                        {/* Các tuyến đường dành cho manager */}
+
                         <Route path="/home" element={<EventList setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/" element={<EventList setIsAuthenticated={setIsAuthenticated} />} />
                         <Route path="/login" element={<Navigate to="/" replace />} />

@@ -8,7 +8,7 @@ import axios from "axios";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ setSelectedEvent }) => { 
   const [eventTotal, setEventTotal] = useState(0);
   const [device, setDevice] = useState(0);
   const [employee, setEmployee] = useState(0);
@@ -142,7 +142,7 @@ const AdminDashboard = () => {
       <Typography variant="h5" gutterBottom>
         Quản lý sự kiện
       </Typography>
-      <EventTable events={events || []} />
+      <EventTable events={events || []} setSelectedEvent={setSelectedEvent} />
 
     </Box>
   );
