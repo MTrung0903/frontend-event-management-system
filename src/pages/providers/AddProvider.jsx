@@ -30,8 +30,8 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
   const [selectedServices, setSelectedServices] = useState({});
   const [activeTab, setActiveTab] = useState("");
   const [serviceDates, setServiceDates] = useState({});
-  const [page, setPage] = useState(0); // Trạng thái trang
-  const [rowsPerPage, setRowsPerPage] = useState(3); // Số dòng mỗi trang
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(3); 
 
   const handleDateChange = (providerId, serviceId, field, value) => {
     setServiceDates((prevState) => ({
@@ -173,17 +173,17 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
   }, [eventId]);
 
   return (
-    <Box>
+    <Box sx ={{marginLeft:'10px',paddingLeft:'0'}}>
       {/* Dropdown Menu for Tabs */}
       <AppBar
         position="static"
-        sx={{ backgroundColor: "transparent", boxShadow: "none", p: 2 }}
+        sx={{ backgroundColor: "transparent", boxShadow: "none", width:'100%' }}
       >
         <Select
           value={activeTab}
           onChange={handleTabChange}
           displayEmpty
-          sx={{ minWidth: 200 }}
+          sx={{ maxWidth: 800 }}
         >
           {providers.map((provider) => (
             <MenuItem key={provider.id} value={provider.id}>
@@ -194,7 +194,7 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
       </AppBar>
 
       {/* Tab Content */}
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ paddingTop:'5px' }}>
         {providers.map((provider) => (
           <Box
             role="tabpanel"
@@ -208,13 +208,13 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
                 <Typography
                   variant="h6"
                   gutterBottom
-                  sx={{ fontWeight: "bold", mb: 2 }}
+                  sx={{ fontWeight: "bold", mb: 1 }}
                 >
-                  Chi tiết nhà cung cấp dịch vụ
+                  Thông tin 
                 </Typography>
-                <Typography>Email: {provider.email}</Typography>
-                <Typography>SĐT: {provider.phone}</Typography>
-                <Typography>Địa chỉ: {provider.address}</Typography>
+                <Typography sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.6", }}>Email: {provider.email}</Typography>
+                <Typography sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.6", }}>SĐT: {provider.phone}</Typography>
+                <Typography sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.6", }}>Địa chỉ: {provider.address}</Typography>
 
                 {/* Table with Pagination */}
                 {provider.listProviderServices.length > 0 ? (

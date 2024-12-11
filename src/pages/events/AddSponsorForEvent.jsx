@@ -16,18 +16,22 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
-
+import Swal from "sweetalert2";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 const SponsorCard = ({ sponsor, onDelete }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [loadingImage, setLoadingImage] = useState(true);
   const fetchImage = async (sponsorLogo) => {
     try {
-        const response = await axios.get(`http://localhost:8080/file/${sponsor.sponsorLogo}`, {
-            headers: {
-              Authorization: localStorage.getItem("token")
-            },
-            responseType: 'blob',
-          });
+      const response = await axios.get(
+        `http://localhost:8080/file/${sponsor.sponsorLogo}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+          responseType: "blob",
+        }
+      );
       const url = URL.createObjectURL(response.data);
       setImageUrl(url);
     } catch (error) {
@@ -38,10 +42,10 @@ const SponsorCard = ({ sponsor, onDelete }) => {
   };
   useEffect(() => {
     if (sponsor.sponsorLogo) {
-      setLoadingImage(true); // Bắt đầu quá trình tải
+      setLoadingImage(true);
       fetchImage(sponsor.sponsorLogo);
     }
-  }, [sponsor.sponsorLogo]); // Chạy lại khi sponsor.sponsorLogo thay đổi
+  }, [sponsor.sponsorLogo]);
 
   return (
     <Card>
@@ -60,6 +64,19 @@ const SponsorCard = ({ sponsor, onDelete }) => {
         <Typography variant="body2" color="text.secondary">
           Sponsorship Level: {sponsor.sponsorshipLevel}
         </Typography>
+
+        <Box display="flex" justifyContent="flex-end">
+          {" "}
+          <IconButton
+            sx={{
+              "&:hover": { backgroundColor: "rgba(231, 76, 60, 0.1)" },
+            }}
+            onClick={() => onDelete()}
+            title="Delete sponsor"
+          >
+            <DeleteOutlineOutlinedIcon />
+          </IconButton>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -72,6 +89,18 @@ const SponsorForEvent = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [availableSponsors, setAvailableSponsors] = useState([]);
   const [loadingAddSponsor, setLoadingAddSponsor] = useState(false);
+  const deleteSponsorEvent = async (eventId, sponsorId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/man/event/${eventId}/del-sponsor/${sponsorId}`,
+        { headers: { Authorization: localStorage.getItem("token") } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error delete provider:", error);
+      throw error;
+    }
+  };
 
   const { eventId } = useParams();
   const apiUrl = `http://localhost:8080/man/event/${eventId}/sponsors`;
@@ -85,7 +114,7 @@ const SponsorForEvent = () => {
           Authorization: localStorage.getItem("token"),
         },
       });
-  
+
       if (response.data.statusCode === 0) {
         setSponsors(response.data.data);
       } else {
@@ -97,24 +126,51 @@ const SponsorForEvent = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchSponsors();
   }, [apiUrl]);
 
-  const handleDeleteSponsor = (id) => {
-    setSponsors((prev) => prev.filter((sponsor) => sponsor.id !== id));
+  const handleDeleteSponsor = async (sponsorId) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Bạn có muốn xóa nhà tài trợ.Lưu ý : thao tác không thể hoàn lại",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes !",
+        cancelButtonText: "No, cancel!",
+      });
+
+      if (result.isConfirmed) {
+        await deleteSponsorEvent(eventId, sponsorId);
+        Swal.fire(
+          "Deleted!",
+          "Nhà tài trợ đã được xóa khỏi sự kiện",
+          "success"
+        );
+        fetchSponsors();
+      } else {
+        Swal.fire("Cancelled", "Đã hủy thao tác.", "info");
+      }
+    } catch (error) {
+      console.error("Error deleting provider:", error);
+      Swal.fire("Error!", "There was an error deleting the provider.", "error");
+    }
   };
 
   const fetchAvailableSponsors = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/man/event/${eventId}/listponsor`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization:localStorage.getItem("token"),
-            },
-          }
+        `http://localhost:8080/man/event/${eventId}/listponsor`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
       );
       if (response.data.statusCode === 0) {
         setAvailableSponsors(response.data.data);
@@ -125,16 +181,18 @@ const SponsorForEvent = () => {
   };
 
   const handleAddSponsor = async (sponsorId) => {
-    console.log("add sponsor for event")
+    console.log("add sponsor for event");
     setLoadingAddSponsor(true);
     try {
       await axios.post(
-        `http://localhost:8080/man/event/${eventId}/sponsors/${sponsorId}`,null, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: localStorage.getItem("token"),
-            },
-          }
+        `http://localhost:8080/man/event/${eventId}/sponsors/${sponsorId}`,
+        null,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        }
       );
       await fetchAvailableSponsors();
       await fetchSponsors();
@@ -147,7 +205,12 @@ const SponsorForEvent = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+      >
         <Typography variant="h4">Nhà tài cho sự kiện</Typography>
         <Button
           variant="contained"
@@ -173,12 +236,15 @@ const SponsorForEvent = () => {
         <Grid container spacing={3}>
           {sponsors.map((sponsor) => (
             <Grid item xs={12} sm={6} md={4} key={sponsor.id}>
-              <SponsorCard sponsor={sponsor} onDelete={handleDeleteSponsor} />
+              <SponsorCard
+                sponsor={sponsor}
+                onDelete={() => handleDeleteSponsor(sponsor.id)}
+              />
             </Grid>
           ))}
         </Grid>
       )}
-
+      {/*Dialog thêm nhà tài trợ */}
       <Dialog
         open={openAddDialog}
         onClose={() => setOpenAddDialog(false)}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import axios from "axios";
-import { useTheme, styled } from "@mui/material/styles";
+import {  styled } from "@mui/material/styles";
 import {
   Typography,
   Container,
@@ -11,16 +11,11 @@ import {
   CardContent,
   Grid,
   CircularProgress,
+  IconButton
 } from "@mui/material";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
-const CustomButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#446FC1",
-  color: "#fff",
-  fontWeight: "bold",
-  "&:hover": {
-    backgroundColor: "#1BB5D1",
-  },
-}));
 
 const CustomCard = styled(Card)(({ theme }) => ({
   boxShadow: "0 6px 15px rgba(0,0,0,0.2)",
@@ -124,24 +119,27 @@ useEffect(() => {
   }
 
   return (
-<Container sx={{ mt: 4, mb: 4 }}>
-  <Typography
-    variant="h4"
-    sx={{ fontWeight: "bold", mb: 2, fontSize: "32px", color: "#333" }}
-  >
-    {provider.name}
-  </Typography>
+<Container
+  sx={{
+    p: 4,
+    backgroundColor: "#f9f9f9", // Nền nhạt
+    borderRadius: 2, // Bo góc nhẹ cho container
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)", // Tạo hiệu ứng shadow nhẹ
+  }}
+>
   {provider.listProviderServices && provider.listProviderServices.length > 0 ? (
-    <Grid container spacing={2}>
+    <Grid container spacing={3}>
       {provider.listProviderServices.map((service, index) => (
-        <Grid item xs={12} sm={4} md={6} key={index}>
+        <Grid item  key={index}>
           <CustomCard
             sx={{
-              p: 2,
-              borderRadius: 2,
+              p: 3,
+              borderRadius: 3,
               backgroundColor: "#fff",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
               "&:hover": {
-                boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+                transform: "translateY(-5px)",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
               },
             }}
           >
@@ -149,60 +147,91 @@ useEffect(() => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontWeight: "600",
-                  mb: 1.5,
-                  fontSize: "1rem",
-                  color: "#333",
+                  fontWeight: "bold",
+                  mb: 2,
+                  fontSize: "1.25rem",
+                  color: "#2c3e50",
+                  textAlign: "center", // Căn giữa tiêu đề
                 }}
               >
                 {service.serviceName}
               </Typography>
-              <div style={{ display: "flex", marginBottom: "10px" }}>
-                <strong style={{ width: "30%", flexShrink: 0 }}>Loại:</strong>
-                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+              <div style={{ display: "flex", marginBottom: "15px" }}>
+                <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Loại:</strong>
+                <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
                   {service.serviceType}
                 </Typography>
               </div>
-              <div style={{ display: "flex", marginBottom: "10px" }}>
-                <strong style={{ width: "30%", flexShrink: 0 }}>Giá:</strong>
-                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+              <div style={{ display: "flex", marginBottom: "15px" }}>
+                <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Giá:</strong>
+                <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
                   {service.price}
                 </Typography>
               </div>
-              
-
-              {/* Chỉ hiển thị ngày thuê và ngày hết hạn, disable input */}
-              <div style={{ display: "flex", marginBottom: "10px" }}>
-                <strong style={{ width: "30%", flexShrink: 0 }}>Ngày thuê:</strong>
-                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+              <div style={{ display: "flex", marginBottom: "15px" }}>
+                <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Ngày thuê:</strong>
+                <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
                   <input
                     type="datetime-local"
                     value={rentalData[service.id]?.rentalDate || ""}
                     disabled
-                    style={{ width: "92%" }}
+                    style={{
+                      width: "100%",
+                      padding: "5px",
+                      borderRadius: "5px",
+                      border: "1px solid #dcdde1",
+                      backgroundColor: "#ecf0f1",
+                    }}
                   />
                 </Typography>
               </div>
-              <div style={{ display: "flex", marginBottom: "10px" }}>
-                <strong style={{ width: "30%", flexShrink: 0 }}>Ngày hết hạn:</strong>
-                <Typography variant="body2" sx={{ color: "#555", fontSize: "14px" }}>
+              <div style={{ display: "flex", marginBottom: "15px" }}>
+                <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Ngày hết hạn:</strong>
+                <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
                   <input
                     type="datetime-local"
                     value={rentalData[service.id]?.expDate || ""}
                     disabled
-                    style={{ width: "92%" }}
+                    style={{
+                      width: "100%",
+                      padding: "5px",
+                      borderRadius: "5px",
+                      border: "1px solid #dcdde1",
+                      backgroundColor: "#ecf0f1",
+                    }}
                   />
                 </Typography>
               </div>
+              <Box display="flex" justifyContent="flex-end" mt={2}>
+                <IconButton
+                  sx={{
+                    color: "#3498db",
+                    "&:hover": { backgroundColor: "rgba(52, 152, 219, 0.1)" },
+                  }}
+                >
+                  <EditOutlinedIcon />
+                </IconButton>
+                <IconButton
+                  sx={{
+                    color: "#e74c3c",
+                    "&:hover": { backgroundColor: "rgba(231, 76, 60, 0.1)" },
+                  }}
+                >
+                  <DeleteOutlineOutlinedIcon />
+                </IconButton>
+              </Box>
             </CardContent>
           </CustomCard>
         </Grid>
       ))}
     </Grid>
   ) : (
-    <Typography>Dịch vụ không khả dụng.</Typography>
+    <Typography variant="h6" textAlign="center" sx={{ color: "#7f8c8d", mt: 4 }}>
+      Dịch vụ không khả dụng.
+    </Typography>
   )}
 </Container>
+
 
   );
 };

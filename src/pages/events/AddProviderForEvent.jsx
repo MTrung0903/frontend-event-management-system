@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -25,7 +25,8 @@ import {
   PersonOutline,
 } from "@mui/icons-material";
 import axios from "axios";
-import { Snackbar, Alert } from "@mui/material";
+import Swal from "sweetalert2";
+
 import ProviderTabs from "../providers/AddProvider";
 import ViewService from "../providers/ChooseService";
 
@@ -45,7 +46,7 @@ const AddProviderForEvent = () => {
   const { eventId } = useParams();
   const [providers, setProviders] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [availableProviders, setAvailableProviders] = useState([]);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [isDialogDetailOpen, setIsDialogDetailOpen] = useState(false);
@@ -86,30 +87,9 @@ const AddProviderForEvent = () => {
           },
         }
       );
-      setAvailableProviders(response.data.data);
+
     } catch (error) {
       console.error("Error fetching available providers:", error);
-    }
-  };
-
-  const addProvider = async (providerId) => {
-    try {
-      console.log(eventId, providerId);
-      await axios.post(
-        `http://localhost:8080/man/event/${eventId}/providers/${providerId}`,
-        null,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        }
-      );
-      alert("Provider added successfully!");
-      fetchAvailableProviders();
-      fetchProviders();
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Error adding provider:", error);
     }
   };
 
@@ -123,11 +103,30 @@ const AddProviderForEvent = () => {
   };
   const removeProvider = async (providerId) => {
     try {
-      await deleteProviderEvent(eventId, providerId);
-      alert("Provider deleted successfully!");
-      fetchProviders();
+      
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Bạn có muốn xóa nhà cung cấp nhà.Lưu ý : thao tác không thể hoàn lại",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes !",
+        cancelButtonText: "No, cancel!",
+      });
+  
+     
+      if (result.isConfirmed) {
+        
+        await deleteProviderEvent(eventId, providerId);
+        Swal.fire("Deleted!", "Nhà cung cấp đã được xóa khỏi sự kiện", "success");
+        fetchProviders();
+      } else {
+        Swal.fire("Cancelled", "Đã hủy thao tác.", "info");
+      }
     } catch (error) {
       console.error("Error deleting provider:", error);
+      Swal.fire("Error!", "There was an error deleting the provider.", "error");
     }
   };
 
@@ -140,6 +139,7 @@ const AddProviderForEvent = () => {
       <Typography variant="h4" gutterBottom>
         Nhà cung cấp dịch vụ cho sự kiện
       </Typography>
+      {/*Button thêm */}
       <Button
         variant="contained"
         color="primary"
@@ -153,12 +153,13 @@ const AddProviderForEvent = () => {
           fontWeight: "bold",
           maxHeight: 45,
           "&:hover": { backgroundColor: "#1565c0" },
-          marginBottom: "20px"
+          marginBottom: "20px",
+          marginTop:'20px'
         }}
       >
         Thêm nhà cung cấp dịch vụ
       </Button>
-
+      {/*Card */}
       <Box
         sx={{
           display: "flex",
@@ -180,68 +181,73 @@ const AddProviderForEvent = () => {
               },
             }}
           >
-            <CardContent>
+            <CardContent 
+            >
               <Typography
                 variant="h6"
-                sx={{ fontSize: "1.2rem", fontWeight: "bold" }}
+                sx={{ fontSize: "22px", fontWeight: "bold" ,  lineHeight: "1.5", textAlign: "center", width: "100%",}}
               >
                 {provider.name}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ display: "flex", alignItems: "center" }}
+                sx={{ fontSize: "13px", display: "flex", alignItems: "center", lineHeight: "1.5", }}
               >
                 <PersonOutline
                   sx={{
                     marginRight: "8px",
                     fontSize: "16px",
                     color: "#A3B8D0",
+                    lineHeight: "1.5",
                   }}
                 />
                 Liên hệ: {provider.contact}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ display: "flex", alignItems: "center" }}
+                sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.5", }}
               >
                 <EmailOutlined
                   sx={{
                     marginRight: "8px",
                     fontSize: "16px",
                     color: "#A3B8D0",
+                    lineHeight: "1.5",
                   }}
                 />
                 Email: {provider.email}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ display: "flex", alignItems: "center" }}
+                sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.5", }}
               >
                 <PhoneOutlined
                   sx={{
                     marginRight: "8px",
                     fontSize: "16px",
                     color: "#A3B8D0",
+                    lineHeight: "1.5",
                   }}
                 />
                 SĐT: {provider.phone}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ display: "flex", alignItems: "center" }}
+                sx={{ fontSize: "13px", display: "flex", alignItems: "center", lineHeight: "1.5", }}
               >
                 <LocationOnOutlined
                   sx={{
                     marginRight: "8px",
                     fontSize: "16px",
                     color: "#A3B8D0",
+                    lineHeight: "1.5",
                   }}
                 />
                 Địa chỉ: {provider.address}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ display: "flex", alignItems: "center" }}
+                sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.5", }}
               >
                 <LanguageOutlined
                   sx={{
@@ -271,11 +277,11 @@ const AddProviderForEvent = () => {
         <MenuItem
           onClick={() => {
             handleMenuClose();
-            handleDialogDetailOpen(); 
+            handleDialogDetailOpen();
           }}
         >
           {" "}
-          <EditOutlined fontSize="small" /> Xem chi tiết{" "}
+          <EditOutlined fontSize="small" /> Xem các dịch vụ đã thuê{" "}
         </MenuItem>
         <MenuItem
           onClick={() => {
@@ -286,38 +292,38 @@ const AddProviderForEvent = () => {
           <DeleteOutline fontSize="small" sx={{ color: "#A3B8D0" }} /> Xóa
         </MenuItem>
       </Menu>
-
+      {/*Dialog thêm nhà cung cấp dịch vụ */}
       <Dialog
-  open={dialogOpen}
-  onClose={handleDialogClose}
-  sx={{
-    "& .MuiDialog-paper": {
-      width: "900px",
-      maxWidth: "none",
-      height: "auto", 
-    },
-  }}
-  fullWidth
->
-  <DialogTitle>Thêm nhà cung cấp dịch vụ</DialogTitle>
-  <DialogContent
-    sx={{
-      maxHeight: "500px", 
-      overflowY: "auto", 
-    }}
-  >
-    <ProviderTabs
-      onClose={handleDialogClose}
-      onProviderAdded={handleProviderAdded}
-    />
-  </DialogContent>
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        sx={{
+          "& .MuiDialog-paper": {
+            width: "900px",
+            maxWidth: "none",
+            height: "auto",
+          },
+        }}
+        fullWidth
+      >
+        <DialogTitle>Chọn nhà cung cấp</DialogTitle>
+        <DialogContent
+          sx={{
+            maxHeight: "500px",
+            overflowY: "auto",
+          }}
+        >
+          <ProviderTabs
+            onClose={handleDialogClose}
+            onProviderAdded={handleProviderAdded}
+          />
+        </DialogContent>
 
-  <DialogActions>
-    <Button onClick={handleDialogClose} color="primary">
-      Hủy
-    </Button>
-  </DialogActions>
-</Dialog>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Hủy
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/*Dialog view detail */}
       <Dialog
@@ -326,7 +332,7 @@ const AddProviderForEvent = () => {
         sx={{ "& .MuiDialog-paper": { width: "900px", maxWidth: "none" } }}
         fullWidth
       >
-        <DialogTitle>Chi tiết nhà cung cấp dịch vụ</DialogTitle>
+        
         <DialogContent>
           {selectedProvider && (
             <ViewService eventid={eventId} providerid={selectedProvider.id} />
