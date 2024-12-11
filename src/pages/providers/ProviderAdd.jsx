@@ -36,14 +36,26 @@ const ProviderAddForm = ({ onClose ,onProviderAdded }) => {
           title: "Save",
           text: "Thêm thành công",
           icon: "success",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
         });
       } else {
         Swal.fire({
           title: "Save",
           text: "Thêm thất bại",
           icon: "error",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
         });
       }
 

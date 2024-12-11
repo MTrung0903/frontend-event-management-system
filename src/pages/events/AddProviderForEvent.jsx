@@ -113,6 +113,12 @@ const AddProviderForEvent = () => {
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes !",
         cancelButtonText: "No, cancel!",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
       });
   
      

@@ -51,8 +51,14 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
         Swal.fire({
           title: "Add member",
           text: "Thêm thành viên thành công",
-          icon: "error",
-          confirmButtonText: "OK"
+          icon: "success",
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
         });
         setOpenDialog(false);
         onTeamUpdate();
@@ -61,7 +67,13 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
           title: "Add member",
           text: "Thêm thành viên thất bại",
           icon: "error",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
         });
       }
     } catch (err) {
@@ -90,7 +102,13 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
           title: "Delete",
           text: "Xóa thành viên thành công",
           icon: "success",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
         });
         onTeamUpdate();
       } else {
@@ -98,7 +116,13 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
           title: "Delete",
           text: "Xóa thành viên thất bại",
           icon: "error",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown" 
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp" 
+          },
         });
       }
     } catch (error) {
@@ -107,7 +131,13 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
         title: "Delete",
         text: "Xóa thành viên thất bại",
         icon: "error",
-        confirmButtonText: "OK"
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
       });
     } finally {
       setLoading(false);
