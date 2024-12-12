@@ -11,6 +11,7 @@
     "@fullcalendar/list": "^5.11.3",
     "@fullcalendar/react": "^5.11.5",
     "@fullcalendar/timegrid": "^5.11.5",
+    "@hello-pangea/dnd": "^17.0.0",
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "@mui/system": "^6.1.8",

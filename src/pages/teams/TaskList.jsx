@@ -978,9 +978,9 @@ function TaskList({ tasks, setTasks, teamId }) {
             value={formData.status}
             onChange={handleInputChange}
           >
-            <MenuItem value="To do">To do</MenuItem>
-            <MenuItem value="Doing">Doing</MenuItem>
-            <MenuItem value="Done">Done</MenuItem>
+            <MenuItem value="to do">To do</MenuItem>
+            <MenuItem value="doing">Doing</MenuItem>
+            <MenuItem value="done">Done</MenuItem>
           </TextField>
           <TextField
             margin="normal"

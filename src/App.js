@@ -47,9 +47,13 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProviderTabs from "./pages/providers/AddProvider"
 
 import EmployeeTable from "./pages/employee/Team";
+import KanbanBoardEmployee from "./pages/employee/Subtask";
+import CalendarEmp from "./pages/employee/CalendarEmp";
 
 import AdminDeviceManagement from "./pages/admin/AdminDeviceManagement";
 import AdminUserManagement from "./pages/admin/AdminUserManagement ";
+
+import EventListEmp from "./pages/employee/EventListEmp";
 function App() {
   const [theme, colorMode] = useMode();
   const [selectedEvent, setSelectedEvent] = useState(() => {
@@ -190,12 +194,14 @@ function App() {
                     <main className="main-content">
                       <Routes>
                         {/* Các tuyến đường dành cho employee */}
-                        <Route path="/home" element={<EventList setSelectedEvent={setSelectedEvent} />} />
-                        <Route path="/" element={<EventList setIsAuthenticated={setIsAuthenticated} />} />
+                        <Route path="/home" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/login" element={<Navigate to="/" replace />} />
-                        <Route path="" element={<EventList setSelectedEvent={setSelectedEvent} />} />
-                        <Route path="/dashboard" element={<EventList setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/dashboard" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/events/:eventId/team-detail" element={<EmployeeTable />} />
+                        <Route path="/events/:eventId/subtask" element={<KanbanBoardEmployee />} />
+                        <Route path="/events/:eventId/calendar" element={<CalendarEmp />} />
                       </Routes>
                     </main>
                   </div>

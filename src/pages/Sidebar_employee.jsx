@@ -53,15 +53,11 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
   // Các menu mặc định
   const defaultMenuItems = [
     {
-      title: "Dashboard",
-      path: "/dashboard",
+      title: "Event Management",
+    
       icon: <DashboardOutlinedIcon />,
     },
-    {
-      title: "Calendar",
-      
-      submenu: [{ title: "Xem lịch", path: "/calendar/CalendarList" , icon: <CalendarMonthOutlinedIcon />,}],
-    },
+   
   ];
 
   // Các menu khi chọn một sự kiện
@@ -72,23 +68,13 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
         icon: <ArrowBackIcon />,
         path: "/",
         submenu: [
-          {
-            title: "View Event",
-            path: `/events/${selectedEvent.eventId}`,
-            icon: <CalendarMonthOutlinedIcon />
-          },
           
           {
             title: "Thông tin nhóm",
-            path: `/events/${selectedEvent.eventId}/tasks`,
-            icon: <AssignmentOutlinedIcon />,
-          },
-          {
-            title: "Team Detail",
             path: `/events/${selectedEvent.eventId}/team-detail`,
             icon: <GroupsOutlinedIcon />,
           },
-         
+          // { title: "Xem lịch", path: `/events/${selectedEvent.eventId}/calendar` , icon: <CalendarMonthOutlinedIcon />,}
         ],
       },
     ]
