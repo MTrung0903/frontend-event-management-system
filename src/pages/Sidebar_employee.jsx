@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
+
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, Typography, useTheme } from "@mui/material";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme";
 import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
-import HandshakeOutlinedIcon from "@mui/icons-material/HandshakeOutlined";
-import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
-import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOverOutlined";
 import CampaignOutlinedIcon from "@mui/icons-material/CampaignOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
@@ -17,8 +14,7 @@ import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
-import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -42,9 +38,18 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-
+  const navigate = useNavigate();
   const location = useLocation(); // Để theo dõi thay đổi URL
+  const handleClickIcon = () => {
+    // Chuyển hướng khi nhấp vào icon
+    if (location.pathname.includes("event")) {
+      navigate("/");
+    }
+    else {
+      navigate(-1);
+    }
 
+  };
   // Các menu mặc định
   const defaultMenuItems = [
     {
@@ -64,79 +69,26 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
     ? [
       {
         title: "Events",
+        icon: <ArrowBackIcon />,
+        path: "/",
         submenu: [
           {
             title: "View Event",
-            path: `/events/1`,
+            path: `/events/${selectedEvent.eventId}`,
             icon: <CalendarMonthOutlinedIcon />
           },
-          {
-            title: "Session Event",
-            path: `/events/${selectedEvent.eventId}/sessionList`,
-            icon: <PendingActionsOutlinedIcon />
-          },
-          {
-            title: "Invite attendee",
-            path: `/events/${selectedEvent.eventId}/participants`,
-            icon: <ContactMailIcon />
-          },
-        ],
-      },
-      {
-        title: "Sponsor",
-        
-        submenu: [
-          {
-            title: "Add sponsor",
-            path: `/events/${selectedEvent.eventId}/sponsors`,
-            icon: <CurrencyExchangeIcon />,
-          },
-        ],
-      },
-      {
-        title: "Provider",
-        
-        submenu: [
-          {
-            title: "Add Provider",
-            path: `/events/${selectedEvent.eventId}/providers`,
-            icon: <AddBusinessOutlinedIcon />,
-          },
-        ],
-      },
-      {
-        title: "Task",
-       
-        submenu: [
-          { title: "Kanban", path: `/events/${selectedEvent.eventId}/tasks`,  icon: <AssignmentOutlinedIcon />, },
           
-        ],
-      },
-      {
-        title: "SubTask",
-        
-        submenu: [
           {
-            title: "Add SubTask",
-            path: `/events/${selectedEvent.eventId}/subtask`,
-            icon: <AddTaskOutlinedIcon />,
+            title: "Thông tin nhóm",
+            path: `/events/${selectedEvent.eventId}/tasks`,
+            icon: <AssignmentOutlinedIcon />,
           },
-        ],
-      },
-      {
-        title: "Team",
-        
-        submenu: [
           {
             title: "Team Detail",
             path: `/events/${selectedEvent.eventId}/team-detail`,
             icon: <GroupsOutlinedIcon />,
           },
-          {
-            title: "Add Team",
-            path: `/events/${selectedEvent.eventId}/teams`,
-            icon: <GroupAddOutlinedIcon />,
-          },
+         
         ],
       },
     ]
@@ -159,33 +111,40 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
 
   return (
     <Box
-      sx={{
-        display: "flex", /* Đảm bảo toàn bộ ứng dụng sử dụng flexbox */
-        height: "100vh", /* Đảm bảo chiều cao bằng chiều cao của cửa sổ trình duyệt */
-        "& .pro-sidebar-inner": {
-          background: `${colors.primary[400]} !important`,
-          height: "100%", /* Đảm bảo chiều cao sidebar phủ đầy */
+    sx={{
+      display: "flex",
+      height: "100vh",
+      "& .pro-sidebar-inner": {
+        background: `${colors.background[100]} !important`,
+        height: "100%",
+      },
+      "& .pro-icon-wrapper": { backgroundColor: "transparent !important" },
+      "& .pro-inner-item": { padding: "5px 35px 5px 20px !important" },
+      "& .pro-inner-item:hover": { backgroundColor: `${colors.hover[100]} !important`, color: `${colors.active[100]} !important` },
+      "& .pro-menu-item.active": {
+        color: `${colors.active[100]} !important`,
+        backgroundColor: `${colors.hover[100]} !important`,
+        "& .pro-icon": {
+          color: `${colors.activeIcon[100]} !important`,
         },
-        "& .pro-icon-wrapper": { backgroundColor: "transparent !important" },
-        "& .pro-inner-item": { padding: "5px 35px 5px 20px !important" },
-        "& .pro-inner-item:hover": { color: "#868dfb !important" },
-        "& .pro-menu-item.active": { color: "#6870fa !important" },
-      }}
+      },
+      overflow: "hidden",
+      border: 1,
+      borderColor: colors.background[300]
+    }}
     >
       <ProSidebar collapsed={isCollapsed}>
         <Menu iconShape="square">
-          <Link to={`/dashboard`} style={{ textDecoration: "none" }}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              ml="15px"
-            >
-              <Typography variant="h3" color={colors.grey[100]}>
-                EVENT
-              </Typography>
-            </Box>
-          </Link>
+        <Box sx={{
+            marginLeft: 2,
+            color: "red",
+            maxWidth: 3,
+            maxHeight: 40,
+            cursor: 'pointer',
+            display: (location.pathname !== "/home" && location.pathname !== "/" && location.pathname !== "") ? 'block' : 'none'
+          }}>
+            <ArrowBackIcon onClick={handleClickIcon} />
+          </Box>
 
           {/* Các menu items */}
           {menuItems.map((item, index) => (

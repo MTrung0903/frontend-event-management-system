@@ -145,18 +145,7 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
       };
       const response = await updateSubtask(updatedSubtask);
       if (response.data === true) {
-        Swal.fire({
-          title: "Success",
-          text: response.msg || "",
-          icon: "success",
-          confirmButtonText: "OK",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown" 
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp" 
-          },
-        });
+       
       onSave(updatedSubtask);
       }
      else {

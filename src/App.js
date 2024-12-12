@@ -45,6 +45,9 @@ import SessionList from "./pages/session/sectionList"
 import './App.css';
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProviderTabs from "./pages/providers/AddProvider"
+
+import EmployeeTable from "./pages/employee/Team";
+
 function App() {
   const [theme, colorMode] = useMode();
   const [selectedEvent, setSelectedEvent] = useState(() => {
@@ -156,11 +159,11 @@ function App() {
                         <Route path="/mcs" element={<MCList />} />
                         <Route path="/mcs/addMc" element={<MCAdd />} />
 
-                        <Route path="/events/:eventId/team-detail" element={<TeamList />} />
+
 
                         <Route path="/tasks" element={<TaskList />} />
                         <Route path="/tasks/add" element={<TaskAdd />} />
-                        <Route path="/events/:eventId/team-detail" element={<TeamList />} />
+                       
                       </Routes>
                     </main>
                   </div>
@@ -179,12 +182,13 @@ function App() {
                     </div>
                     <main className="main-content">
                       <Routes>
-                        {/* Các tuyến đường dành cho manager */}
+                        {/* Các tuyến đường dành cho employee */}
                         <Route path="/home" element={<EventList setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/" element={<EventList setIsAuthenticated={setIsAuthenticated} />} />
                         <Route path="/login" element={<Navigate to="/" replace />} />
                         <Route path="" element={<EventList setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/dashboard" element={<EventList setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/events/:eventId/team-detail" element={<EmployeeTable />} />
                       </Routes>
                     </main>
                   </div>
