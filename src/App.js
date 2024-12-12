@@ -163,7 +163,7 @@ function App() {
 
                         <Route path="/tasks" element={<TaskList />} />
                         <Route path="/tasks/add" element={<TaskAdd />} />
-                       
+                        <Route path="/events/:eventId/team-detail" element={<TeamList />} />
                       </Routes>
                     </main>
                   </div>
