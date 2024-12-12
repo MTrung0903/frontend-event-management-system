@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import {
   Box,
   Typography,
@@ -18,7 +18,11 @@ function Login({ setIsAuthenticated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []); // Chỉ chạy khi component được render lần đầu
 
   if (token) {
     return <Navigate to="/" replace />;
@@ -36,7 +40,7 @@ function Login({ setIsAuthenticated }) {
       const token = response.data.data;
       localStorage.setItem("token", "Bearer " + token);
       setIsAuthenticated(true);
-      window.location.href = "/home";
+      window.location.href = "/";
     } catch (error) {
       setError("Email hoặc mật khẩu không đúng!");
     } finally {

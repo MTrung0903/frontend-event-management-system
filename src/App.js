@@ -48,6 +48,8 @@ import ProviderTabs from "./pages/providers/AddProvider"
 
 import EmployeeTable from "./pages/employee/Team";
 
+import AdminDeviceManagement from "./pages/admin/AdminDeviceManagement";
+import AdminUserManagement from "./pages/admin/AdminUserManagement ";
 function App() {
   const [theme, colorMode] = useMode();
   const [selectedEvent, setSelectedEvent] = useState(() => {
@@ -99,8 +101,13 @@ function App() {
                     </div>
                     <main className="main-content">
                       <Routes>
-
-                        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                        <Route path="/admin/dashboard" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
+                        <Route path="/admin/service" element={<AdminDeviceManagement />} />
+                        <Route path="/admin/user" element={<AdminUserManagement />} />
+                        <Route path="/home" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
+                        <Route path="/" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
+                        <Route path="/events/:eventId" element={<EventDetail />} />
+                        <Route path="" element={<AdminDashboard setSelectedEvent={setSelectedEvent}/>} />
                       </Routes>
                     </main>
                   </div>
@@ -115,7 +122,7 @@ function App() {
                   </div>
                   <div className="content-wrapper">
                     <div className="topbar">
-                      <Topbar />
+                      <Topbar setIsAuthenticated={setIsAuthenticated} />
                     </div>
                     <main className="main-content">
                       <Routes>
@@ -178,7 +185,7 @@ function App() {
                   </div>
                   <div className="content-wrapper">
                     <div className="topbar">
-                      <Topbar />
+                      <Topbar setIsAuthenticated={setIsAuthenticated} />
                     </div>
                     <main className="main-content">
                       <Routes>
@@ -203,8 +210,10 @@ function App() {
               <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
               <Route path="/forgot" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+
             </Routes>
           )}
+         
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>

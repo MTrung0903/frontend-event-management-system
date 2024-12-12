@@ -9,7 +9,6 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import HandshakeOutlinedIcon from "@mui/icons-material/HandshakeOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
-import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined';
 import CampaignOutlinedIcon from "@mui/icons-material/CampaignOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
@@ -17,12 +16,10 @@ import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
-import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RecordVoiceOverOutlinedIcon from '@mui/icons-material/RecordVoiceOverOutlined';
 import EventIcon from '@mui/icons-material/Event';
-import { color, fontSize } from "@mui/system";
+
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);

@@ -10,18 +10,18 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 
-const Topbar = () => {
+const Topbar = ({ setIsAuthenticated }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login"); // Chuyển hướng nếu không có token
-    }
-  }, [navigate]); // Đảm bảo rằng navigate được gọi sau khi hook được gọi
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     navigate("/login"); // Chuyển hướng nếu không có token
+  //   }
+  // }, [navigate]); // Đảm bảo rằng navigate được gọi sau khi hook được gọi
 
   // State to manage the menu open/close
   const [anchorEl, setAnchorEl] = useState(null);
@@ -46,7 +46,7 @@ const Topbar = () => {
   const handleLogoutClick = () => {
     // Thực hiện logic logout (ví dụ xóa token)
     localStorage.removeItem("token");
-
+    setIsAuthenticated(false);
     navigate("/login"); // Chuyển hướng đến trang login sau khi logout
     handleMenuClose(); // Đóng menu sau khi chọn
   };
