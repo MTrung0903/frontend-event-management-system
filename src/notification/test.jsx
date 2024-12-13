@@ -7,7 +7,7 @@ const Test = () => {
   const userId = 1;
   useEffect(() => {
     if (stompClient) {
-      stompClient.send("/app/private", {}, JSON.stringify({ userName: "man1@gmail.com", message: "Hello 123" }));
+      stompClient.send("/app/private", {}, JSON.stringify({ title : "Thông báo", accountID: "5", message: "Hello 123" }));
     }
   }, [stompClient]);
   
