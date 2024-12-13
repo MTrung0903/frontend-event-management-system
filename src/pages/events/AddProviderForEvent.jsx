@@ -311,7 +311,15 @@ const AddProviderForEvent = () => {
         }}
         fullWidth
       >
-        <DialogTitle>Chọn nhà cung cấp</DialogTitle>
+        <DialogTitle 
+          sx={{
+            textAlign: "center",
+            fontSize: "24px",    
+            fontWeight: "bold", 
+          }}
+        >
+          Chọn nhà cung cấp
+        </DialogTitle>
         <DialogContent
           sx={{
             maxHeight: "500px",
@@ -338,7 +346,15 @@ const AddProviderForEvent = () => {
         sx={{ "& .MuiDialog-paper": { width: "900px", maxWidth: "none" } }}
         fullWidth
       >
-        
+                <DialogTitle 
+          sx={{
+            textAlign: "center",
+            fontSize: "24px",    
+            fontWeight: "bold", 
+          }}
+        >
+          Các dịch vụ đã thuê
+        </DialogTitle>
         <DialogContent>
           {selectedProvider && (
             <ViewService eventid={eventId} providerid={selectedProvider.id} />
