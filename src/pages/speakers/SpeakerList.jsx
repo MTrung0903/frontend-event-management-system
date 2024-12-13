@@ -160,7 +160,7 @@ const SpeakerList = () => {
                     <Grid item xs={12} sm={6} md={4} key={speaker.id}>
                         <Card sx={{ position: 'relative' ,
                         minHeight:'370px',
-
+                        maxHeight:'500px',
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between", // Nội dung cách đều trên-dưới

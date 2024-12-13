@@ -46,8 +46,15 @@ import SessionList from "./pages/session/sectionList"
 import './App.css';
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProviderTabs from "./pages/providers/AddProvider"
+
+import EmployeeTable from "./pages/employee/Team";
+import KanbanBoardEmployee from "./pages/employee/Subtask";
+import CalendarEmp from "./pages/employee/CalendarEmp";
+
 import AdminDeviceManagement from "./pages/admin/AdminDeviceManagement";
 import AdminUserManagement from "./pages/admin/AdminUserManagement ";
+
+import EventListEmp from "./pages/employee/EventListEmp";
 import { WebSocketProvider } from "./notification/WebSocketContext";
 import  Test  from "./notification/test";
 function App() {
@@ -188,14 +195,53 @@ function App() {
                         <Routes>
                           <Route path="/profile" element={<Profile />} />
 
-                          <Route path="/home" element={<EventList setSelectedEvent={setSelectedEvent} />} />
-                          <Route path="/" element={<EventList setIsAuthenticated={setIsAuthenticated} />} />
-                          <Route path="/login" element={<Navigate to="/" replace />} />
-                          <Route path="" element={<EventList setSelectedEvent={setSelectedEvent} />} />
-                          <Route path="/dashboard" element={<EventList setSelectedEvent={setSelectedEvent} />} />
-                        </Routes>
-                      </main>
+                        <Route path="/providers" element={<ProviderList />} />
+                        <Route path="/provider/:providerId/service" element={<ProviderServiceAdd />} />
+                        <Route path="/provider/service/:serviceId" element={<ProviderServiceDetail />} />
+                        <Route path="/providers/:providerId" element={<ProviderDetail />} />
+                        <Route path="/providers/:providerId/edit" element={<ProviderEdit />} />
+
+
+                        <Route path="/speakers" element={<SpeakerList />} />
+                        <Route path="/speakers/add" element={<SpeakerAdd />} />
+                        <Route path="/speakers/:speakerId/detail" element={<SpeakerDetail />} />
+                        <Route path="/mcs" element={<MCList />} />
+                        <Route path="/mcs/addMc" element={<MCAdd />} />
+
+
+
+                        <Route path="/tasks" element={<TaskList />} />
+                        <Route path="/tasks/add" element={<TaskAdd />} />
+                        <Route path="/events/:eventId/team-detail" element={<TeamList />} />
+                      </Routes>
+                    </main>
+                  </div>
+                </div>
+              )}
+
+              {userRoles.length == 1 && (
+                // <></>
+                <div className="app">
+                  <div className="sidebar">
+                    <SidebarEmployee selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent} />
+                  </div>
+                  <div className="content-wrapper">
+                    <div className="topbar">
+                      <Topbar setIsAuthenticated={setIsAuthenticated} />
                     </div>
+                    <main className="main-content">
+                      <Routes>
+                        {/* Các tuyến đường dành cho employee */}
+                        <Route path="/home" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/login" element={<Navigate to="/" replace />} />
+                        <Route path="" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/dashboard" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/events/:eventId/team-detail" element={<EmployeeTable />} />
+                        <Route path="/events/:eventId/subtask" element={<KanbanBoardEmployee />} />
+                        <Route path="/events/:eventId/calendar" element={<CalendarEmp />} />
+                      </Routes>
+                    </main>
                   </div>
                 )}
               </>

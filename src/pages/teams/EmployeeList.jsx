@@ -208,13 +208,13 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
 
         <Table sx={{ marginTop: "5px" }}>
           <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Actions</TableCell>
+            <TableRow sx={{ backgroundColor: '#80A8FF' }}>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>ID</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Name</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Email</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Address</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Phone</TableCell>
+              <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

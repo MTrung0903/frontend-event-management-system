@@ -145,18 +145,7 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
       };
       const response = await updateSubtask(updatedSubtask);
       if (response.data === true) {
-        Swal.fire({
-          title: "Success",
-          text: response.msg || "",
-          icon: "success",
-          confirmButtonText: "OK",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown" 
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp" 
-          },
-        });
+       
       onSave(updatedSubtask);
       }
      else {
@@ -361,13 +350,13 @@ const SubTaskList = ({ subTasks, onSubtaskUpdate, employees }) => {
     <TableContainer component={Paper} style={{  boxShadow:"none" }} m>
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell>Subtask Name</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Deadline</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Assigned</TableCell>
-            <TableCell>Actions</TableCell>
+          <TableRow sx={{ backgroundColor: '#80A8FF' }}>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Subtask Name</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Description</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Deadline</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Status</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Assigned</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -857,7 +846,7 @@ function TaskList({ tasks, setTasks, teamId }) {
               type="submit"
               variant="contained"
               onClick={handleAddTask}
-              style={{backgroundColor: "#3f51b5",color: "#ffffff",padding: "8px 16px", marginRight:"50px"}}> 
+              style={{backgroundColor: "#3f51b5",color: "#ffffff",padding: "8px 16px", marginRight:"50px", marginBottom:'10px'}}> 
               Add Task
           </Button>
         </Box>
@@ -872,10 +861,12 @@ function TaskList({ tasks, setTasks, teamId }) {
               teamId={teamId}
             />
           )}
-          <TableRow>
-            <TableCell>Task Name</TableCell> <TableCell>Description</TableCell>
-            <TableCell>Deadline</TableCell> <TableCell>Status</TableCell>
-            <TableCell>Actions</TableCell>
+          <TableRow sx={{ backgroundColor: '#80A8FF' }}>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Task Name</TableCell> 
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Description</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Deadline</TableCell> 
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Status</TableCell>
+            <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -989,9 +980,9 @@ function TaskList({ tasks, setTasks, teamId }) {
             value={formData.status}
             onChange={handleInputChange}
           >
-            <MenuItem value="To do">To do</MenuItem>
-            <MenuItem value="Doing">Doing</MenuItem>
-            <MenuItem value="Done">Done</MenuItem>
+            <MenuItem value="to do">To do</MenuItem>
+            <MenuItem value="doing">Doing</MenuItem>
+            <MenuItem value="done">Done</MenuItem>
           </TextField>
           <TextField
             margin="normal"
