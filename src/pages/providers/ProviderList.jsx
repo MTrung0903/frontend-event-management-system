@@ -63,10 +63,7 @@ const ProviderList = () => {
     handleMenuClose();
   };
 
-  const handleEdit = () => {
-    navigate(`/providers/${selectedProvider.id}/edit`);
-    handleMenuClose();
-  };
+
 
   const handleDelete = async () => {
     try {
@@ -136,7 +133,7 @@ const ProviderList = () => {
         autoHeight
         pageSize={5}
         rowsPerPageOptions={[5]}
-        
+        style={{ width: "98%" }}
       />
       <Menu
         anchorEl={anchorEl}

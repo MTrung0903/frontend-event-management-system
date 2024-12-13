@@ -350,7 +350,7 @@ const AddProviderForEvent = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Box>  
   );
 };
 

@@ -5,15 +5,8 @@ import { Box, Typography, useTheme } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme";
-import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import CampaignOutlinedIcon from "@mui/icons-material/CampaignOutlined";
 import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
-import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
-import ContactMailIcon from '@mui/icons-material/ContactMail';
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import CelebrationOutlinedIcon from '@mui/icons-material/CelebrationOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -53,9 +46,9 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
   // Các menu mặc định
   const defaultMenuItems = [
     {
-      title: "Event Management",
+      title: "Quản lý sự kiện",
     
-      icon: <DashboardOutlinedIcon />,
+      icon: <CelebrationOutlinedIcon />,
     },
    
   ];
@@ -74,7 +67,6 @@ const SidebarEmployee = ({ selectedEvent, setSelectedEvent }) => {
             path: `/events/${selectedEvent.eventId}/team-detail`,
             icon: <GroupsOutlinedIcon />,
           },
-          // { title: "Xem lịch", path: `/events/${selectedEvent.eventId}/calendar` , icon: <CalendarMonthOutlinedIcon />,}
         ],
       },
     ]
