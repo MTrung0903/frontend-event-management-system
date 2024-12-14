@@ -22,6 +22,17 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { useWebSocket } from "../../notification/WebSocketContext";
+
+import "../../notification/Notification.css"; 
+export const getEventName = async (eventId) => {
+  const response = await axios.get(`http://localhost:8080/man/event/${eventId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token"),
+    },
+  });
+  return response.data.data;
+};
 
 function EmployeeList({ teamId, employees, onTeamUpdate }) {
   const { eventId } = useParams();
@@ -29,7 +40,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [members, setMembers] = useState([]);
   const manId = localStorage.getItem("userId")
-
+  const { stompClient } = useWebSocket();
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
@@ -45,8 +56,10 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
           },
         }
       );
+      const event = await getEventName(eventId)
       console.log(response.data);
       if (response.data.data === true) {
+
         console.log(response.data.data);
         Swal.fire({
           title: "Add member",
@@ -60,6 +73,9 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
             popup: "animate__animated animate__fadeOutUp" 
           },
         });
+        if (stompClient) {
+          stompClient.send("/app/private", {}, JSON.stringify({ title : "Thông báo", accountID: `${employeeId}`, message: "Bạn đã tham gia nhómn ở sự kiện "+`${event.eventName}` }));
+        }
         setOpenDialog(false);
         onTeamUpdate();
       } else {

@@ -26,6 +26,9 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from 'sweetalert2';
+import { useWebSocket } from "../../notification/WebSocketContext";
+
+import "../../notification/Notification.css"; 
 
 export const createTask = async (task) => {
   const response = await axios.post(`http://localhost:8080/man/task`, task, {
@@ -106,6 +109,14 @@ export const updateTask = async (task) => {
   });
   return response.data.data;
 };
+export const getEventName = async (eventId) => {
+  const response = await axios.get(`http://localhost:8080/man/event/${eventId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token"),
+    },
+  });
+  return response.data.data;
+};
 
 export const updateSubtask = async (subtask) => {
   const formattedTaskDl = new Date(subtask.subTaskDeadline)
@@ -131,7 +142,7 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
   const [subTaskDeadline, setSubTaskDeadline] = useState(subtask.subTaskDeadline);
   const [status, setStatus] = useState(subtask.status);
   const [employeeId, setEmployeeId] = useState(subtask.employeeId);
-
+  const { stompClient } = useWebSocket();
   const handleSave = async () => {
     try {
       
@@ -147,6 +158,7 @@ const UpdateSubtaskDialog = ({ subtask, employees, onClose, onSave }) => {
       if (response.data === true) {
        
       onSave(updatedSubtask);
+
       }
      else {
       Swal.fire({
@@ -433,7 +445,7 @@ const AddTaskDialog = ({ onClose, onSave, eventId, teamId }) => {
   
         // Cập nhật danh sách task
         onSave((prevTasks) => [...prevTasks, newTask]);
-  
+        
         // Đóng modal
         onClose();
       } else {
@@ -628,6 +640,7 @@ function TaskList({ tasks, setTasks, teamId }) {
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
+  const { stompClient } = useWebSocket();
   const handleSaveTask = (createdTask) => {
     setTasks((prevTasks) => [...prevTasks, createdTask]);
   };
@@ -767,7 +780,8 @@ function TaskList({ tasks, setTasks, teamId }) {
   
       // Đóng dialog sau khi gửi thành công
       handleCloseDialog();
-  
+      
+      const event = await getEventName(eventId)
       // Xử lý thông báo dựa trên response từ backend
       if (response.data === true) {
         Swal.fire({
@@ -782,7 +796,9 @@ function TaskList({ tasks, setTasks, teamId }) {
             popup: "animate__animated animate__fadeOutUp" 
           },
         });
-  
+        if (stompClient) {
+          stompClient.send("/app/private", {}, JSON.stringify({ title : "Thông báo", accountID: `${formData.employeeId}`, message: "Bạn có nhiệm vụ mới ở "+`${event.eventName}` }));
+        }
         // Cập nhật danh sách subtasks cho task hiện tại
         setTasks((prevTasks) =>
           prevTasks.map((task) =>

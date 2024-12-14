@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useWebSocket } from "./WebSocketContext";
 
-import "./Notification.css"; // File CSS riêng
+import "./Notification.css"; 
 const Test = () => {
   const { stompClient } = useWebSocket();
   const userId = 1;

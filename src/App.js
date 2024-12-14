@@ -110,7 +110,7 @@ function App() {
                       </div>
                       <main className="main-content">
                         <Routes>
-                          <Route path="/admin/test" element={<Test />} />
+                          
                           <Route path="/admin/dashboard" element={<AdminDashboard setSelectedEvent={setSelectedEvent} />} />
                           <Route path="/admin/service" element={<AdminDeviceManagement />} />
                           <Route path="/admin/user" element={<AdminUserManagement />} />
@@ -180,45 +180,6 @@ function App() {
                   </div>
                 )}
 
-                {userRoles.length == 1 && (
-                  // <></>
-                  <div className="app">
-                    <div className="sidebar">
-                      <SidebarEmployee selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent} />
-                    </div>
-                    <div className="content-wrapper">
-                      <div className="topbar">
-                        <Topbar setIsAuthenticated={setIsAuthenticated} />
-                      </div>
-                      <main className="main-content">
-
-                        <Routes>
-                          <Route path="/profile" element={<Profile />} />
-
-                          <Route path="/providers" element={<ProviderList />} />
-                          <Route path="/provider/:providerId/service" element={<ProviderServiceAdd />} />
-                          <Route path="/provider/service/:serviceId" element={<ProviderServiceDetail />} />
-                          <Route path="/providers/:providerId" element={<ProviderDetail />} />
-                          <Route path="/providers/:providerId/edit" element={<ProviderEdit />} />
-
-
-                          <Route path="/speakers" element={<SpeakerList />} />
-                          <Route path="/speakers/add" element={<SpeakerAdd />} />
-                          <Route path="/speakers/:speakerId/detail" element={<SpeakerDetail />} />
-                          <Route path="/mcs" element={<MCList />} />
-                          <Route path="/mcs/addMc" element={<MCAdd />} />
-
-
-
-                          <Route path="/tasks" element={<TaskList />} />
-                          <Route path="/tasks/add" element={<TaskAdd />} />
-                          <Route path="/events/:eventId/team-detail" element={<TeamList />} />
-                        </Routes>
-                      </main>
-                    </div>
-                  </div>
-
-                )}
 
                 {userRoles.length == 1 && (
 
@@ -232,15 +193,14 @@ function App() {
                       </div>
                       <main className="main-content">
                         <Routes>
-                          {/* Các tuyến đường dành cho employee */}
-                          <Route path="/home" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
-                          <Route path="/" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
-                          <Route path="/login" element={<Navigate to="/" replace />} />
-                          <Route path="" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
-                          <Route path="/dashboard" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
-                          <Route path="/events/:eventId/team-detail" element={<EmployeeTable />} />
-                          <Route path="/events/:eventId/subtask" element={<KanbanBoardEmployee />} />
-                          <Route path="/events/:eventId/calendar" element={<CalendarEmp />} />
+                        <Route path="/home" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/login" element={<Navigate to="/" replace />} />
+                        <Route path="" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/dashboard" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
+                        <Route path="/events/:eventId/team-detail" element={<EmployeeTable />} />
+                        <Route path="/events/:eventId/subtask" element={<KanbanBoardEmployee />} />
+                        <Route path="/events/:eventId/calendar" element={<CalendarEmp />} />
                         </Routes>
                       </main>
                     </div>
@@ -251,6 +211,7 @@ function App() {
 
             {!isAuthenticated && (
               <Routes>
+                <Route path="/test" element={<Test />} />
                 <Route path="/" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/forgot" element={<ForgotPassword />} />
