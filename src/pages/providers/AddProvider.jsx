@@ -23,6 +23,7 @@ import {
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import Swal from 'sweetalert2';
 
 const ProviderTabs = ({ onClose, onProviderAdded }) => {
   const { eventId } = useParams();
@@ -149,7 +150,18 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
           await addServiceForEvent(eventId, serviceId, rentalDate, expDate);
         }
       }
-      alert("Lưu dịch vụ và nhà cung cấp dịch vụ thành công");
+      Swal.fire({
+        title: "Save",
+        text: "Thêm thành côngcông",
+        icon: "success",
+        confirmButtonText: "OK",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown" 
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp" 
+        },
+      });
       fetchProviders();
       onProviderAdded();
       onClose();

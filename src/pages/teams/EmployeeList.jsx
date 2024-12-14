@@ -113,7 +113,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
     try {
       setLoading(true);
       const response = await deleteTeamMember(teamId, employeeId);
-      if (response.status === "success") {
+      if (response.data.status === "success") {
         Swal.fire({
           title: "Delete",
           text: "Xóa thành viên thành công",
@@ -130,7 +130,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
       } else {
         Swal.fire({
           title: "Delete",
-          text: "Xóa thành viên thất bại",
+          text:response.data.message ||"Xóa thành viên thất bại",
           icon: "error",
           confirmButtonText: "OK",
           showClass: {
