@@ -45,11 +45,6 @@ const AdminSidebar = () => {
       icon: <DashboardOutlinedIcon />,
     },
     {
-      title: "Thiết bị và dịch vụ",
-      path: "/admin/service",
-      icon: <ConstructionOutlinedIcon />
-    },
-    {
       title: "Tài khoản",
       path: "/admin/user",
       icon: <ManageAccountsOutlinedIcon />

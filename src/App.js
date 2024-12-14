@@ -57,6 +57,7 @@ import AdminUserManagement from "./pages/admin/AdminUserManagement ";
 import EventListEmp from "./pages/employee/EventListEmp";
 import { WebSocketProvider } from "./notification/WebSocketContext";
 import Test from "./notification/test";
+import AddMcForEvent from "./pages/events/AddMcForEvent"
 function App() {
   const [theme, colorMode] = useMode();
   const [selectedEvent, setSelectedEvent] = useState(() => {
@@ -147,6 +148,7 @@ function App() {
                           <Route path="/event/create" element={<EventAdd setSelectedEvent={setSelectedEvent} />} />
                           <Route path="/events/:eventId" element={<EventDetail />} />
                           <Route path="/events/:eventId/sponsors" element={<SponsorForEvent />} />
+                          <Route path="/events/:eventId/mc" element={<AddMcForEvent />} />
                           <Route path="/events/:eventId/providers" element={<AddProviderForEvent />} />
                           <Route path="/events/:eventId/teams" element={<AddTeamForEvent />} />
                           <Route path="/events/:eventId/subtask" element={<TaskSubTasks />} />
@@ -174,6 +176,7 @@ function App() {
                           <Route path="/events/:eventId/team-detail" element={<TeamList />} />
                           <Route path="/tasks" element={<TaskList />} />
                           <Route path="/tasks/add" element={<TaskAdd />} />
+
                         </Routes>
                       </main>
                     </div>
