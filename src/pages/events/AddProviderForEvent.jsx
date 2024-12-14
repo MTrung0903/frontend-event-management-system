@@ -58,6 +58,7 @@ const AddProviderForEvent = () => {
 
   const handleProviderAdded = () => {
     fetchAvailableProviders();
+    fetchProviders();
     setDialogOpen(false);
   };
   const fetchProviders = async () => {
