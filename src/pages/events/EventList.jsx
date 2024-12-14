@@ -13,7 +13,7 @@ const EventList = ({ setSelectedEvent }) => {
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
     const [imageUrls, setImageUrls] = useState({});
-    const token = localStorage.getItem("token");
+    
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -27,6 +27,7 @@ const EventList = ({ setSelectedEvent }) => {
         setFilteredEvents(filtered);
     };
     const defaultImage = 'https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg';
+    const token = localStorage.getItem("token");
     const fetchEvents = () => {
         if (token) {
             const payload = JSON.parse(atob(token.split(".")[1]));

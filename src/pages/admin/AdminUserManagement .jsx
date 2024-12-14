@@ -126,6 +126,15 @@ const AdminUserManagement = () => {
         text: "Số điện thoại không hợp lệ.",
         icon: "error",
         confirmButtonText: "OK",
+        customClass: {
+          popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+        },
+        didOpen: () => {
+          // Áp dụng trực tiếp CSS qua script khi Swal mở
+          const swalPopup = document.querySelector('.swal-popup-inline');
+          swalPopup.style.zIndex = 9999;
+          swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+        }
       });
       return;
     }
