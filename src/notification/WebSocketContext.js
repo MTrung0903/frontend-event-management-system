@@ -18,8 +18,13 @@ export const WebSocketProvider = ({ children }) => {
     const socket = new SockJS("http://localhost:8080/ws");
     const client = Stomp.over(socket);
     const token = localStorage.getItem("token");
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const userId = payload.userId
+    let userId;
+    let payload;
+    if (token) {
+       payload = JSON.parse(atob(token.split(".")[1]));
+       userId = payload.userId
+    }
+    
     client.connect({}, () => {
       console.log("Connected to WebSocket");
       client.subscribe(`/user/${userId}/specific`, (message) => {
