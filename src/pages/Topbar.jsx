@@ -26,6 +26,10 @@ const Topbar = ({ setIsAuthenticated }) => {
   const token = localStorage.getItem("token");
   const payload = JSON.parse(atob(token.split(".")[1]));
   const userId = payload.userId || null;
+  const [notifications, setNotifications] = useState([]); // Lưu danh sách thông báo
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Kiểm soát hiển thị dropdown
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const handleChangePassword = () => {
     setOpen(true);
   };
@@ -39,7 +43,7 @@ const Topbar = ({ setIsAuthenticated }) => {
     const hasLowerCase = /[a-z]/;
     const hasDigits = /\d/;
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
-    
+
     if (password.length < minLength) {
       return "Mật khẩu phải có ít nhất 8 ký tự.";
     }
@@ -55,16 +59,16 @@ const Topbar = ({ setIsAuthenticated }) => {
     if (!hasSpecialChar.test(password)) {
       return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
     }
-    
+
     return null; // Mật khẩu hợp lệ
   };
-  
+
   const handleSubmit = async () => {
     if (newPassword !== confirmPassword) {
       alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
       return;
     }
-  
+
     // Kiểm tra mật khẩu mới
     const passwordError = validatePassword(newPassword);
     if (passwordError) {
@@ -73,16 +77,16 @@ const Topbar = ({ setIsAuthenticated }) => {
     }
     try {
       await axios.post("http://localhost:8080/change-password", {
-        newPassword : newPassword,
-        accountId : userId 
+        newPassword: newPassword,
+        accountId: userId
       });
       alert("Đổi thành công");
     } catch (error) {
       alert("Đổi thất bại");
-    } 
+    }
     handleClose();
   };
-  
+
   // useEffect(() => {
   //   const token = localStorage.getItem("token");
   //   if (!token) {
@@ -91,8 +95,28 @@ const Topbar = ({ setIsAuthenticated }) => {
   // }, [navigate]); // Đảm bảo rằng navigate được gọi sau khi hook được gọi
 
   // State to manage the menu open/close
-  const [anchorEl, setAnchorEl] = useState(null);
 
+  const fetchNotifications = async () => {
+    setIsLoading(true); // Bắt đầu tải
+    try {
+      const response = await axios.get(`http://localhost:8080/notify/${userId}`, {
+        headers : {
+          Authorization: localStorage.getItem("token")
+        }
+      }); // Thay URL bằng API của bạn
+      setNotifications(response.data.data); // Cập nhật danh sách thông báo
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setIsLoading(false); // Kết thúc tải
+    }
+  };
+  const handleNotiClick = () => {
+    setIsDropdownOpen((prev) => !prev);
+    if (!isDropdownOpen) {
+      fetchNotifications(); // Gọi API khi mở dropdown
+    }
+  }
   // Open menu when icon is clicked
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -135,8 +159,55 @@ const Topbar = ({ setIsAuthenticated }) => {
             <LightModeOutlinedIcon />
           )}
         </IconButton>
-        <IconButton>
+        <IconButton onClick={handleNotiClick}>
           <NotificationsOutlinedIcon />
+          {isDropdownOpen && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: "45px",
+                right: "15px",
+                width: "300px",
+                maxHeight: "400px",
+                backgroundColor: "white",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                overflowY: "auto",
+                zIndex: 10,
+              }}
+            >
+              {isLoading ? (
+                <Box p={2} textAlign="center">
+                  Đang tải thông báo...
+                </Box>
+              ) : notifications.length > 0 ? (
+                notifications.map((noti, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      padding: "10px 15px",
+                      borderBottom: "1px solid #f0f0f0",
+                      "&:hover": {
+                        backgroundColor: "#f9f9f9",
+                        cursor: "pointer",
+                      },
+                    }}
+                  >
+                    <strong>{noti.title}</strong>
+                    <p style={{ fontSize: "14px", color: "#666", margin: 0 }}>
+                      {noti.message}
+                    </p>
+                  </Box>
+                ))
+              ) : (
+                <Box p={2} textAlign="center">
+                  Không có thông báo mới.
+                </Box>
+              )}
+            </Box>
+          )}
+
         </IconButton>
         <IconButton>
           <SettingsOutlinedIcon />
