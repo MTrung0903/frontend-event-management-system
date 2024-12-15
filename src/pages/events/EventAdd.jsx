@@ -122,7 +122,7 @@ const CreateEventForm = ({ onClose, eventId, event, eventImage, handleFetch }) =
             return;
         }
         if (check) {
-            formData.eventStatus = "Public";
+            formData.eventStatus = "Incoming";
         }
         else {
             formData.eventStatus = "Draft";

@@ -92,7 +92,7 @@ const SpeakerDetail = () => {
         const formDataToSubmit = new FormData();
         // Thêm hình ảnh nếu có thay đổi
         if (imageUrl) {
-            formDataToSubmit.append("image", imageUrl);
+            formDataToSubmit.append("image", formData.imageUrl);
         }
 
         // Thêm các dữ liệu khác từ form
@@ -103,7 +103,7 @@ const SpeakerDetail = () => {
         formDataToSubmit.append("phone", formData.phone);
         formDataToSubmit.append("address", formData.address);
         formDataToSubmit.append("description", formData.description);
-        formDataToSubmit.append("imageSpeaker", formData.imageUrl);
+        formDataToSubmit.append("imageSpeaker", imageUrl);
         try {
             await axios.put("http://localhost:8080/man/speaker", formDataToSubmit, {
                 headers: {
@@ -251,19 +251,7 @@ const SpeakerDetail = () => {
             <Dialog open={isEditOpen} onClose={handleEditClose}>
                 <DialogTitle>Cập nhật diễn giả</DialogTitle>
                 <DialogContent>
-                <CardMedia
-                    component="img"
-                    image={imageUrl}
-                    alt="Diễn Giả Image Preview"
-                    style={{
-                      width: "150px",
-                      height: "150px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                      margin: "0",
-                    }}
-                    />
+            
                     <TextField
                         fullWidth
                         label="Name"

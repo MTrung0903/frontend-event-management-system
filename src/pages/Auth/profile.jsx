@@ -28,7 +28,8 @@ const Profile = () => {
     const fetch = async () => {
         try {
             let response;
-            if (roles.length === 2) {
+            console.log("roles:" + roles) ;
+            if (roles.length == 2) {
                 response = await axios.get(`http://localhost:8080/man/profile/${userId}`, {
                     headers: {
                         Authorization: token,
@@ -42,6 +43,7 @@ const Profile = () => {
                 });
             }
             const fetchedData = response.data.data;
+            console.log(fetchedData);
             setData(fetchedData);
 
             // Đặt giá trị ban đầu cho phone và address

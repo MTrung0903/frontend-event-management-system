@@ -13,7 +13,7 @@ const EventList = ({ setSelectedEvent }) => {
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
     const [imageUrls, setImageUrls] = useState({});
-    
+    const [filterStatus, setFilterStatus] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -21,9 +21,30 @@ const EventList = ({ setSelectedEvent }) => {
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
-        const filtered = events.filter((event) =>
-            event.eventName.toLowerCase().includes(value.toLowerCase())
-        );
+        applyFilters(value, filterStatus); // Áp dụng bộ lọc mới
+    };
+
+    const handleStatusChange = (e) => {
+        const status = e.target.value;
+        setFilterStatus(status);
+        applyFilters(searchTerm, status); // Áp dụng bộ lọc mới
+    };
+
+    const applyFilters = (term, status) => {
+        let filtered = events;
+
+        // Lọc theo search term
+        if (term) {
+            filtered = filtered.filter((event) =>
+                event.eventName.toLowerCase().includes(term.toLowerCase())
+            );
+        }
+
+        // Lọc theo trạng thái
+        if (status !== "All") {
+            filtered = filtered.filter((event) => event.eventStatus === status);
+        }
+
         setFilteredEvents(filtered);
     };
     const defaultImage = 'https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg';
@@ -161,7 +182,7 @@ const EventList = ({ setSelectedEvent }) => {
                     }}
                 >
                     <FormControl fullWidth style={{ minWidth: "150px" }}>
-                        <Select defaultValue={"All"} style={{ height: "45px", lineHeight: "45px" }}>
+                        <Select onChange={handleStatusChange} value={filterStatus} style={{ height: "45px", lineHeight: "45px" }}>
                             <MenuItem value="All">Tất cả</MenuItem>
                             <MenuItem value="Incoming">Sắp diễn ra</MenuItem>
                             <MenuItem value="Draft">Bản nháp</MenuItem>

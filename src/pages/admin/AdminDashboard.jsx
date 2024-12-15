@@ -13,7 +13,7 @@ const AdminDashboard = ({ setSelectedEvent }) => {
   const [device, setDevice] = useState(0);
   const [employee, setEmployee] = useState(0);
   const [eventCompleted, setEventCompleted] = useState(null);
-  const [eventCancel, setEventCancel] = useState(null);
+  const [eventIncoming, setEventIncoming] = useState(null);
   const [sponsor, setSponsor] = useState(null);
   const [events, setEvent] = useState(null);
   const fetchAPI = async () => {
@@ -28,7 +28,7 @@ const AdminDashboard = ({ setSelectedEvent }) => {
         setDevice(data.totalDevices);
         setEmployee(data.totalEmployees);
         setEventCompleted(data.cntCompleted);
-        setEventCancel(data.cntCancel);
+        setEventIncoming(data.cntIncoming);
         setSponsor(data.cntSponsor);
         setEvent(data.listEvent);
         //console.log(response.data.data)
@@ -50,8 +50,8 @@ const AdminDashboard = ({ setSelectedEvent }) => {
         backgroundColor: "rgba(75, 192, 192, 0.6)",
       },
       {
-        label: "Sự kiện bị hủy",
-        data: eventCancel,
+        label: "Sự kiện sắp diễn ra",
+        data: eventIncoming,
         backgroundColor: "rgba(255, 99, 132, 0.6)",
       },
     ],
