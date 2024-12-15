@@ -312,7 +312,7 @@ const AdminUserManagement = () => {
       console.error("Error blocking account:", error);
     }
   };
-
+  const safeLowerCaseIncludes = (str, query) => str?.toLowerCase().includes(query) || false;
   return (
     <Box p={3}>
       <Typography variant="h4" gutterBottom>
@@ -360,13 +360,12 @@ const AdminUserManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data
-              ?.filter((user) =>
-                !user.roles.includes("ADMIN") &&
-                (user.name.toLowerCase().includes(searchQuery) ||
-                  user.email.toLowerCase().includes(searchQuery) ||
-                  user.phone.toLowerCase().includes(searchQuery))
-              )
+          {data?.filter((user) =>
+              !user.roles?.includes("ADMIN") &&
+              (safeLowerCaseIncludes(user?.name, searchQuery) ||
+              safeLowerCaseIncludes(user?.email, searchQuery) ||
+                user?.phone?.includes(searchQuery))
+            )
               .map((user, index) => (
                 <TableRow key={user.accountID}>
                   <TableCell>{index + 1}</TableCell>
