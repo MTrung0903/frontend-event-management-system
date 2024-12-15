@@ -3,7 +3,7 @@ import { Box, Typography, Tabs, Tab, CircularProgress, Button } from "@mui/mater
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { Link } from "react-router-dom";
+
 
 const SponsorshipTabs = () => {
     const theme = useTheme();
@@ -58,7 +58,7 @@ const SponsorshipTabs = () => {
     return (
         <Box m="20px">
             <Typography variant="h4" gutterBottom>
-                Sponsorship Levels
+                Mức độ tài trợ
             </Typography>
             {/* <Box display="flex" justifyContent="end" mt="20px" marginBottom="20px" marginRight="10px">
                 <Link to={`/sponsorships/add`} style={{ textDecoration: 'none' }}>
@@ -93,8 +93,8 @@ const SponsorshipTabs = () => {
                         >
                             {activeTab === index && (
                                 <>
-                                    <Typography variant="h6" gutterBottom>
-                                        Lợi ích: {sponsorship.benefit}
+                                    <Typography variant="h5" gutterBottom sx={{ marginBottom:'10px'}}>
+                                        Quyền lợi: {sponsorship.benefit}
                                     </Typography>
                                     <Box
                                         height="500px"

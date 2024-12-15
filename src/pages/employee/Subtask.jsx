@@ -14,7 +14,14 @@ import axios from "axios";
 import { useLocation, useNavigate ,useParams} from "react-router-dom";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
-
+import {
+  fetchTasks,
+  updateTask,
+  deleteTask,
+  createTask,
+  getTeamsForTask,
+  assignedTeam,
+} from "../../routes/route";
 const KanbanBoardEmployee = () => {
     const { eventId } = useParams();
     const location = useLocation();
@@ -119,6 +126,7 @@ const KanbanBoardEmployee = () => {
   
           // Cập nhật tất cả các subtask có trạng thái đã thay đổi
           await updateSubtasks([removed]);
+         
         }
       } else {
         // Di chuyển trong cùng cột
