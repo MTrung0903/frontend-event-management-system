@@ -100,7 +100,7 @@ const Topbar = ({ setIsAuthenticated }) => {
     setIsLoading(true); // Bắt đầu tải
     try {
       const response = await axios.get(`http://localhost:8080/notify/${userId}`, {
-        headers : {
+        headers: {
           Authorization: localStorage.getItem("token")
         }
       }); // Thay URL bằng API của bạn
@@ -163,19 +163,19 @@ const Topbar = ({ setIsAuthenticated }) => {
           <NotificationsOutlinedIcon />
           {isDropdownOpen && (
             <Box
-              sx={{
-                position: "absolute",
-                top: "45px",
-                right: "15px",
-                width: "300px",
-                maxHeight: "400px",
-                backgroundColor: "white",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                overflowY: "auto",
-                zIndex: 10,
-              }}
+            sx={{
+              position: "absolute",
+              top: "45px",
+              right: "15px",
+              width: "300px",
+              maxHeight: "400px",
+              backgroundColor: "white",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              overflowY: "auto",
+              zIndex: 10,
+            }}
             >
               {isLoading ? (
                 <Box p={2} textAlign="center">
@@ -192,12 +192,30 @@ const Topbar = ({ setIsAuthenticated }) => {
                         backgroundColor: "#f9f9f9",
                         cursor: "pointer",
                       },
+                      textAlign: "left", // Căn lề trái
                     }}
                   >
-                    <strong>{noti.title}</strong>
-                    <p style={{ fontSize: "14px", color: "#666", margin: 0 }}>
+                    <Box
+                      sx={{
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        color: "#333",
+                        marginBottom: "5px",
+                        textAlign: "left", // Căn lề trái
+                      }}
+                    >
+                      {noti.title}
+                    </Box>
+                    <Box
+                      sx={{
+                        fontSize: "14px",
+                        color: "#555",
+                        lineHeight: "1.5",
+                        textAlign: "left", // Căn lề trái
+                      }}
+                    >
                       {noti.message}
-                    </p>
+                    </Box>
                   </Box>
                 ))
               ) : (
