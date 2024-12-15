@@ -16,76 +16,58 @@ import {
   CardMedia,
   CardContent
 } from "@mui/material";
-import { tokens } from "../../theme";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DescriptionIcon from "@mui/icons-material/Description";
-import InfoIcon from "@mui/icons-material/Info";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import EditOutlined from '@mui/icons-material/EditOutlined';
-import CreateEventForm from './EventAdd'
+import CreateEventForm from './EventAdd';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
+import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
 const EventDetail = () => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  const { eventId } = useParams(); // Lấy eventId từ URL
+  const { eventId } = useParams();
   const [event, setEvent] = useState(null);
-  const [eventImage, setEventImage] = useState(null); // Trạng thái URL ảnh
+  const [eventImage, setEventImage] = useState(null);
   const [isDialogEditOpen, setIsDialogEditOpen] = useState(false);
+
   const handleDialogEditOpen = () => setIsDialogEditOpen(true);
   const handleDialogEditClose = () => setIsDialogEditOpen(false);
-  const handleFetch = () => {
-    fetchAPI();
-  };
+
   const formatDateTime = (dateTimeString) => {
-    // Tách chuỗi dựa trên khoảng trắng và dấu hai chấm
     const [date, time] = dateTimeString.split(" ");
     const [hours, minutes] = time.split(":");
-
-    // Ghép lại chuỗi theo định dạng mong muốn
     return `${date} ${hours}:${minutes}`;
   };
+
   const fetchAPI = async () => {
     try {
-      axios
-        .get(`http://localhost:8080/man/event/${eventId}`, {
+      const response = await axios.get(`http://localhost:8080/man/event/${eventId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      if (response.data.statusCode === 0) {
+        setEvent(response.data.data);
+        const imageUrl = `http://localhost:8080/file/${response.data.data.eventImg}`;
+        const imageResponse = await axios.get(imageUrl, {
           headers: {
-            "Content-Type": "application/json",
             Authorization: localStorage.getItem("token"),
           },
-        })
-        .then((response) => {
-          if (response.data.statusCode === 0) {
-            setEvent(response.data.data);
-            console.log(response.data.data);
-            // Lấy ảnh từ API
-            const imageUrl = `http://localhost:8080/file/${response.data.data.eventImg}`;
-            axios
-              .get(imageUrl, {
-                headers: {
-                  Authorization: localStorage.getItem("token"),
-                },
-                responseType: "blob", // Lấy dữ liệu ảnh dưới dạng blob
-              })
-              .then((imageResponse) => {
-                const blobUrl = URL.createObjectURL(imageResponse.data);
-                setEventImage(blobUrl); // Lưu URL tạm thời của ảnh
-              })
-              .catch((imageError) => {
-                console.error("Error fetching event image", imageError);
-              });
-          }
-        })
-    }
-    catch (error) {
+          responseType: "blob",
+        });
+        const blobUrl = URL.createObjectURL(imageResponse.data);
+        setEventImage(blobUrl);
+      }
+    } catch (error) {
       console.error("Error fetching event details", error);
     }
-    finally {
+  };
 
-    }
-
-  }
   useEffect(() => {
-    fetchAPI()
+    fetchAPI();
   }, [eventId]);
 
   if (!event) {
@@ -93,91 +75,98 @@ const EventDetail = () => {
   }
 
   return (
-    <Card
-    fullWidth
-      sx={{
-        margin: "0 auto",
-        borderRadius: 2,
-        boxShadow: 5,
-        overflow: "hidden",
-        marginTop: 3,
-        padding: 3
-      }}
-    >
-      {/* Event Image */}
+    <Card sx={{ 
+      overflow: "hidden", 
+      width: '100%', 
+      margin: 'auto', 
+      marginTop: '1px', 
+      boxShadow: 3,
+      backgroundColor: '#f5f5f5',
+      padding: '0 10px' 
+    }}>
       {eventImage && (
         <CardMedia
           component="img"
-          height="200"
-          image={eventImage} // URL tạm thời của ảnh
+          height="300"
+          image={eventImage}
           alt={event.eventName}
-          sx={{ objectFit: "cover" }}
+          sx={{ objectFit: "cover", marginTop: '5px',  }}
         />
       )}
-
-      {/* Event Content */}
-      <CardContent sx={{ padding: 3}}>
-        {/* Event Name */}
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+      <CardContent sx={{ padding: '0 40px' }}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h3" sx={{ fontWeight: "bold", color: '#4A4A4A', fontFamily: 'Arial, sans-serif' ,marginTop:'10px'}}>
             {event.eventName}
           </Typography>
-          <IconButton onClick={handleDialogEditOpen}>
+          <IconButton onClick={handleDialogEditOpen} sx ={{marginTop:'10px'}}>
             <EditOutlinedIcon />
           </IconButton>
         </Box>
-
         <Divider sx={{ marginY: 2 }} />
-
-        {/* Event Date */}
-        <Grid container alignItems="flex-start" sx={{ marginBottom: 2 }}>
-          <Grid item>
-            <EventNoteIcon sx={{ color: "primary.main", marginRight: 1 }} />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="body1">
-              <strong>Thời gian:</strong> {`${formatDateTime(event.eventStart)} - ${formatDateTime(event.eventEnd)}`}
+        <Grid container spacing={2} direction="column" sx={{ lineHeight: 2, paddingLeft: '10px', paddingRight: '10px' }}>
+          <Grid item xs={12}>
+            <Box display="flex" alignItems="center" mb={1}>
+              
+              <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
+                Thời gian
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" mb={1} paddingLeft={3}>       
+            <CalendarMonthOutlinedIcon sx={{ color: "primary.main", marginRight: 1 }} />
+            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' }}>
+              {`${formatDateTime(event.eventStart)} - ${formatDateTime(event.eventEnd)}`}
             </Typography>
+            </Box>
+            
           </Grid>
-        </Grid>
-
-        {/* Event Location */}
-        <Grid container alignItems="center" sx={{ marginBottom: 2 }}>
-          <Grid item>
-            <LocationOnIcon sx={{ color: "primary.main", marginRight: 1 }} />
-          </Grid>
-          <Grid item>
-            <Typography variant="body1">
-              <strong>Địa điểm:</strong> {event.eventLocation}
+          <Grid item xs={12}>
+            <Box display="flex" alignItems="center" mb={1} >
+              
+              <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
+                Địa điểm
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" mb={1} paddingLeft={3}>
+            <LocationOnOutlinedIcon sx={{ color: "primary.main", marginRight: 1 }} />
+            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' }}>
+              {event.eventLocation}
             </Typography>
+            </Box>          
           </Grid>
-        </Grid>
-
-        {/* Event Host */}
-        <Grid container alignItems="flex-start" sx={{ marginBottom: 2 }}>
-          <Grid item>
-            <DescriptionIcon sx={{ color: "primary.main", marginRight: 1 }} />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="body1">
-              <strong>Chủ sự kiện:</strong> {event.eventHost}
+          <Grid item xs={12}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
+              Chủ sự kiện
             </Typography>
-          </Grid>
-        </Grid>
-
-        {/* Event Description */}
-        <Grid container alignItems="flex-start">
-          <Grid item>
-            <DescriptionIcon sx={{ color: "primary.main", marginRight: 1 }} />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="body1">
-              <strong>Mô tả:</strong> {event.eventDescription}
+          </Box>
+          <Box display="flex" alignItems="center" mb={1} paddingLeft={3}>
+            <SupervisedUserCircleOutlinedIcon
+              sx={{
+                color: "primary.main",
+                marginRight: 1,
+                fontSize: 24, 
+              }}
+            />
+            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.8' }}>
+              {event.eventHost}
             </Typography>
+          </Box>          
+          </Grid>
+          <Grid item xs={12}>
+          <Box display="flex" alignItems="center" mb={1}>
+            <Typography variant="h6" sx={{ color: '#757575', fontStyle: 'italic' }}>
+              Mô tả
+            </Typography>
+          </Box>
+          <Box display="flex" alignItems="flex-start" mb={1} paddingLeft={3}>
+            <DescriptionIcon sx={{ color: "primary.main", marginRight: 1, fontSize: 24 }} />
+            <Typography variant="body1" sx={{ textAlign: 'justify', lineHeight: '1.9' }}>
+              {event.eventDescription}
+            </Typography>
+          </Box>  
           </Grid>
         </Grid>
       </CardContent>
-      {/* Dialog for Editing */}
       <Dialog
         open={isDialogEditOpen}
         onClose={handleDialogEditClose}
@@ -188,7 +177,6 @@ const EventDetail = () => {
           },
         }}
         fullWidth
-
       >
         <DialogContent>
           <CreateEventForm
@@ -196,7 +184,7 @@ const EventDetail = () => {
             eventId={eventId}
             event={event}
             eventImage={eventImage}
-            handleFetch={handleFetch}
+            handleFetch={fetchAPI}
           />
         </DialogContent>
         <DialogActions>

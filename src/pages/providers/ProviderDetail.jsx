@@ -26,7 +26,7 @@ import ServiceAddForm from "../provider-services/ProviderServiceAdd";
 import EditProviderForm from "./ProviderEdit";
 import ProviderServiceDetail from "../provider-services/ProviderServiceDetail";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-
+import Swal from 'sweetalert2';
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8080/man/provider/",
   headers: {
@@ -83,7 +83,12 @@ const ProviderDetail = () => {
   const removeProviderService = async (serviceId) => {
     try {
       await deleteProviderService(serviceId);
-      alert("Xóa thành công");
+      Swal.fire({
+        title: "Delete",
+        text: "Xóa thành công",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
       fetchProviderDetail();
     } catch (error) {
       console.error("Error deleting provider:", error);

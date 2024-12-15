@@ -21,7 +21,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
-const Contacts = () => {
+const AddTeamForEvent = () => {
   const { eventId } = useParams();
   const colors = tokens("light");
   const [selectedTab, setSelectedTab] = useState(0);
@@ -159,25 +159,25 @@ const Contacts = () => {
   };
 
   const fetchEmployees = async () => {
-    try {
-      const response = await fetch(`http://localhost:8080/man/employee/${eventId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-      const result = await response.json();
+  try {
+    const response = await axios.get(`http://localhost:8080/man/employee/${eventId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: localStorage.getItem("token"),
+      },
+    });
 
-      if (result.statusCode === 0 && result.data) {
-        return result.data;
-      } else {
-        throw new Error("Failed to fetch employees.");
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-      throw error;
+    // Kiểm tra và xử lý dữ liệu trả về
+    if (response.data.statusCode === 0 && response.data.data) {
+      return response.data.data;
+    } else {
+      throw new Error("Failed to fetch employees.");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    throw error;
+  }
+};
 
   useEffect(() => {
     const loadTeams = async () => {
@@ -238,21 +238,15 @@ const Contacts = () => {
       );
       if (response.ok) {
         alert("Member added successfully!");
-        setOpenDialog(false); 
-
-        const updatedTeams = await fetch(
-          `http://localhost:8080/man/event/${eventId}/team-member`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
-        const result = await updatedTeams.json();
-        if (result.statusCode === 0 && result.data) {
-          setTeams(result.data);
-        }
+        setOpenDialog(false);
+  
+        
+        const updatedEmployees = employees.filter(employee => employee.id !== employeeId); 
+        setEmployees(updatedEmployees);
+  
+        
+        const updatedTeams = await fetchTeams(eventId);
+        setTeams(updatedTeams);
       } else {
         alert("Failed to add member!");
       }
@@ -260,6 +254,7 @@ const Contacts = () => {
       console.error("Error adding member:", err);
     }
   };
+  
 
   if (loading) {
     return (
@@ -500,4 +495,4 @@ const Contacts = () => {
   );
 };
 
-export default Contacts;
+export default AddTeamForEvent;

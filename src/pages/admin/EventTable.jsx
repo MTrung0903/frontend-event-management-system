@@ -1,13 +1,23 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from "@mui/material";
-
-const events = [
-  { id: 1, name: "VIETNAMWOOD - Triển lãm quốc tế ngành công nghiệp chế biến gỗ", date: "2024-12-7", status: "Hoàn thành" },
-  { id: 2, name: "TUẦN LỄ ÂM NHẠC VIỆT NAM 2024 - VIETNAM MUSIC WEEK 2024", date: "2024-12-14", status: "Sắp diễn ra" },
-  { id: 3, name: "Triển lãm Quốc tế Thành phố Thông minh Châu Á 2024.", date: "2024-12-15", status: "Sắp diễn ra" },
-];
-
-const EventTable = () => {
+import { useNavigate } from "react-router-dom";
+const EventTable = ({setSelectedEvent, events}) => {
+  const navigate = useNavigate();
+  const formatDate = (date) => {
+    return new Date(date).toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Chế độ 12 giờ (AM/PM)
+    });
+  };
+  const handleEventClick = (event) => {
+    //console.log(`Navigating to: /events/${event.eventId}`);
+    setSelectedEvent(event);
+    navigate(`/events/${event.eventId}`);
+};
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -15,6 +25,7 @@ const EventTable = () => {
           <TableRow>
             <TableCell>#</TableCell>
             <TableCell>Tên sự kiện</TableCell>
+            <TableCell>Người tổ chức sự kiện</TableCell>
             <TableCell>Ngày tổ chức</TableCell>
             <TableCell>Trạng thái</TableCell>
             <TableCell>Hành động</TableCell>
@@ -22,13 +33,14 @@ const EventTable = () => {
         </TableHead>
         <TableBody>
           {events.map((event, index) => (
-            <TableRow key={event.id}>
+            <TableRow key={event.eventId}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{event.name}</TableCell>
-              <TableCell>{event.date}</TableCell>
-              <TableCell>{event.status}</TableCell>
+              <TableCell>{event.eventName}</TableCell>
+              <TableCell>{event.eventHost}</TableCell>
+              <TableCell>{formatDate(event.eventStart)} - {formatDate(event.eventEnd)}</TableCell>
+              <TableCell>{event.eventStatus}</TableCell>
               <TableCell>
-                <Button variant="contained" size="small" color="primary">
+                <Button variant="contained" size="small" sx = {{backgroundColor:"#1c7ee3"}} onClick={() => handleEventClick(event)}>
                   Xem chi tiết
                 </Button>
               </TableCell>

@@ -1,54 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Dialog, DialogTitle, DialogContentText, DialogContent, DialogActions, Card, CardContent, Typography, CardMedia, Grid, Box, TextField, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {  Card, CardContent, Typography, CardMedia, Grid, Box, TextField,  FormControl, Select, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
+
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import CloseIcon from '@mui/icons-material/Close'
-import './event.css'
-const EventList = ({ setSelectedEvent }) => {
+
+
+const EventListEmp = ({ setSelectedEvent }) => {
     console.log(setSelectedEvent);
     const [events, setEvents] = useState([]);
     const navigate = useNavigate();
     const [imageUrls, setImageUrls] = useState({});
-    const [filterStatus, setFilterStatus] = useState("All");
+    const token = localStorage.getItem("token");
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredEvents, setFilteredEvents] = useState([]);
-    const [confirmOpen, setConfirmOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
+
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
-        applyFilters(value, filterStatus); // Áp dụng bộ lọc mới
-    };
-
-    const handleStatusChange = (e) => {
-        const status = e.target.value;
-        setFilterStatus(status);
-        applyFilters(searchTerm, status); // Áp dụng bộ lọc mới
-    };
-
-    const applyFilters = (term, status) => {
-        let filtered = events;
-
-        // Lọc theo search term
-        if (term) {
-            filtered = filtered.filter((event) =>
-                event.eventName.toLowerCase().includes(term.toLowerCase())
-            );
-        }
-
-        // Lọc theo trạng thái
-        if (status !== "All") {
-            filtered = filtered.filter((event) => event.eventStatus === status);
-        }
-
+        const filtered = events.filter((event) =>
+            event.eventName.toLowerCase().includes(value.toLowerCase())
+        );
         setFilteredEvents(filtered);
     };
     const defaultImage = 'https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg';
-    const token = localStorage.getItem("token");
     const fetchEvents = () => {
         if (token) {
             const payload = JSON.parse(atob(token.split(".")[1]));
@@ -126,34 +102,9 @@ const EventList = ({ setSelectedEvent }) => {
 
     const handleEventClick = (event) => {
         setSelectedEvent(event);
-        navigate(`/events/${event.eventId}`);
+        navigate(`/events/${event.eventId}/team-detail`);
     };
-    const handleClickCreate = () => {
-        navigate("/event/create");
-    };
-    const handleCancelDelete = () => {
-        setConfirmOpen(false); 
-    };
-    const handleDelete = async () => {
-        setConfirmOpen(true);
-    };
-    const handleConfirmDelete = async () => {
-        try {
-            await axios.delete(`http://localhost:8080/man/event/${selected.eventId}`, {
-                headers: {
-                    Authorization: localStorage.getItem("token"),
-                },
-            });
-            
-            fetchEvents();
-            alert("Xóa sự kiện thành công!");
-        } catch (error) {
-            console.error("Error deleting event:", error);
-            alert("Xóa thất bại. Thử lại sau");
-        } finally {
-            setConfirmOpen(false);
-        }
-    };
+
 
     return (
         <Box sx={{ padding: 2}}>
@@ -182,26 +133,14 @@ const EventList = ({ setSelectedEvent }) => {
                     }}
                 >
                     <FormControl fullWidth style={{ minWidth: "150px" }}>
-                        <Select onChange={handleStatusChange} value={filterStatus} style={{ height: "45px", lineHeight: "45px" }}>
+                        <Select defaultValue={"All"} style={{ height: "45px", lineHeight: "45px" }}>
                             <MenuItem value="All">Tất cả</MenuItem>
                             <MenuItem value="Incoming">Sắp diễn ra</MenuItem>
                             <MenuItem value="Draft">Bản nháp</MenuItem>
                             <MenuItem value="Completed">Hoàn thành</MenuItem>
                         </Select>
                     </FormControl>
-                    <Button
-                        variant="contained"
-                        onClick={handleClickCreate}
-                        sx={{
-                            backgroundColor: "#1c7de8",
-                            color: "white",
-                            "&:hover": { backgroundColor: "#1565c0" },
-                            minWidth: 150,
-                            minHeight: 45
-                        }}
-                    >
-                        Tạo sự kiện
-                    </Button>
+                   
                 </div>
 
             </Box>
@@ -299,114 +238,16 @@ const EventList = ({ setSelectedEvent }) => {
                             >
 
 
-                                {/* Delete Button */}
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation(); // Ngăn click vào Card
-                                        handleDelete(); // Hàm xử lý xóa
-                                        setSelected(event);
-                                    }}
-                                    style={{
-                                        border: 'none',
-                                        background: 'none',
-                                        cursor: 'pointer',
-                                    }}
-                                >
-                                    <DeleteOutlined sx={{ fontSize: 20, color: '#d32f2f' }} />
-                                </button>
+                             
                             </Box>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
-            <Dialog
-                open={confirmOpen}
-                onClose={handleCancelDelete}
-                aria-labelledby="confirm-dialog-title"
-                aria-describedby="confirm-dialog-description"
-                PaperProps={{
-                    sx: {
-                        borderRadius: 3,
-                        padding: 2,
-                        width: "500px",
-                        bgcolor: "#f9f9f9",
-                        boxShadow: "0px 5px 15px rgba(0, 0, 0, 0.3)",
-                    },
-                }}
-            >
-                <DialogTitle
-                    id="confirm-dialog-title"
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 1,
-                        fontWeight: "bold",
-                        color: "#333",
-                        fontSize: "20px",
-                        marginBottom: 1,
-                    }}
-                >
-                    <WarningAmberIcon sx={{ color: "#f57c00", fontSize: 28 }} />
-                    Xác nhận xóa
-                </DialogTitle>
-                <DialogContent
 
-                >
-                    <DialogContentText
-                        id="confirm-dialog-description"
-                        sx={{
-                            textAlign: "center",
-                            color: "#555",
-                            fontSize: "16px",
-                            marginBottom: 2,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                        }}
-                    >
-                        Bạn có chắc chắn muốn xóa sự kiện này? <br />
-                        <strong>Hành động này không thể hoàn tác.</strong>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions
-                    sx={{
-                        justifyContent: "center",
-                        gap: 2,
-                        paddingBottom: 2,
-                    }}
-                >
-                    <Button
-                        onClick={handleCancelDelete}
-                        variant="outlined"
-                        startIcon={<CloseIcon />}
-                        sx={{
-                            color: "#333",
-                            borderColor: "#bbb",
-                            "&:hover": {
-                                borderColor: "#999",
-                                backgroundColor: "#f2f2f2",
-                            },
-                        }}
-                    >
-                        No
-                    </Button>
-                    <Button
-                        onClick={handleConfirmDelete}
-                        variant="contained"
-                        startIcon={<WarningAmberIcon />}
-                        sx={{
-                            backgroundColor: "#e53935",
-                            color: "white",
-                            "&:hover": { backgroundColor: "#d32f2f" },
-                        }}
-                    >
-                        Yes
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 };
 
 
-export default EventList;
+export default EventListEmp;

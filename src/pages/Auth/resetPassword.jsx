@@ -18,22 +18,19 @@ const ResetPassword = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const tokenLogin = localStorage.getItem("token");
-
-  
   // Lấy token từ URL (nếu API yêu cầu)
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const token = queryParams.get("token");
   if (tokenLogin) {
     // Người dùng đã đăng nhập, chuyển hướng đến dashboard
     return <Navigate to="/" replace />;
   }
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get("token");
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess("");
-
     if (newPassword !== confirmPassword) {
       setError("Mật khẩu xác nhận không khớp.");
       setLoading(false);
