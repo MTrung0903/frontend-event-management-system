@@ -113,6 +113,7 @@ function EmployeeList({ teamId, employees, onTeamUpdate }) {
     try {
       setLoading(true);
       const response = await deleteTeamMember(teamId, employeeId);
+      console.log("status: " + response.data.status);
       if (response.data.status === "success") {
         Swal.fire({
           title: "Delete",
