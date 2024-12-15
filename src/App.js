@@ -196,6 +196,7 @@ function App() {
                       </div>
                       <main className="main-content">
                         <Routes>
+                        <Route path="/profile" element={<Profile />} />
                         <Route path="/home" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/" element={<EventListEmp setSelectedEvent={setSelectedEvent} />} />
                         <Route path="/login" element={<Navigate to="/" replace />} />
