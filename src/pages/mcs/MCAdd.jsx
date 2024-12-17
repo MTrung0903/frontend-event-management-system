@@ -67,7 +67,7 @@ const McAdd = ({ closeDialog ,fetchMcList }) => {
   return (
     <>
      
-      <Card style={{ padding: '30px', borderRadius: '15px', boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)' }}>
+     
         <form onSubmit={handleSubmit}>
           {imagePreview ? (
             <div style={{ textAlign: 'left', marginBottom: '20px' }}>
@@ -210,7 +210,7 @@ const McAdd = ({ closeDialog ,fetchMcList }) => {
             </Grid>
           </Grid>
         </form>
-      </Card>
+
     </>
   );
 };

@@ -39,26 +39,34 @@ const SpeakerList = () => {
         setFilteredSpeakers(filtered);
     };
     // Fetch data from API
+    const fetchSpeakers = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/man/speaker', {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: localStorage.getItem("token"),
+                },
+            });
+            const result = await response.json();
+            console.log('API Response:', result);
+            if (Array.isArray(result.data)) {
+                setSpeakers(result.data);
+                setFilteredSpeakers(result.data);
+            } else {
+                console.error('Unexpected API response format:', result);
+                setSpeakers([]);
+            }
+        } catch (error) {
+            console.error('Error fetching speakers:', error);
+        }
+    };
+
+    // Call fetchSpeakers when component mounts
     useEffect(() => {
-        fetch('http://localhost:8080/man/speaker', {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: localStorage.getItem("token"),
-            },
-        })
-            .then((response) => response.json())
-            .then((result) => {
-                console.log('API Response:', result);
-                if (Array.isArray(result.data)) {
-                    setSpeakers(result.data);
-                    setFilteredSpeakers(result.data);
-                } else {
-                    console.error('Unexpected API response format:', result);
-                    setSpeakers([]);
-                }
-            })
-            .catch((error) => console.error('Error fetching speakers:', error));
+        fetchSpeakers();
     }, []);
+
+
 
     // Handle dots menu
     const handleMenuOpen = (event, speakerId) => {
@@ -71,15 +79,11 @@ const SpeakerList = () => {
         setSelectedSpeaker(null);
     };
 
-    // const handleViewDetail = () => {
-    //     console.log('Edit speaker:', selectedSpeakerId);
-    //     handleMenuClose();
-    //     navigate(`/speakers/${selectedSpeakerId.id}`);
-    // };
 
     const handleDelete = async () => {
         try {
           await axiosInstance.delete(`/${selectedSpeakerId}`);
+          fetchSpeakers()
           Swal.fire({
             title: "Delete",
             text: "Xóa diễn giả thành công",
@@ -88,8 +92,8 @@ const SpeakerList = () => {
           });
       
           const response = await axiosInstance.get();
-          setSpeakers(response.data.data || []);
          
+        
         } catch (error) {
           console.error("Error deleting sponsor:", error);
           Swal.fire({
@@ -148,12 +152,17 @@ const SpeakerList = () => {
                     onChange={handleSearchChange}
                     style={{ width: "300px" }}
                 />
-                <SpeakerAdd
-                    onAdd={(newSpeaker) => {
-                        setSpeakers((prev) => [...prev, newSpeaker]);
-                        setFilteredSpeakers((prev) => [...prev, newSpeaker]);
-                    }}
-                />
+               <SpeakerAdd
+    onAdd={async () => {
+        try {
+            await fetchSpeakers();  
+        } catch (error) {
+            console.error('Error while fetching speakers after adding', error);
+        }
+    }}
+/>
+
+
             </Box>
             <Grid container spacing={2}>
                 {filteredSpeakers.map((speaker) => (

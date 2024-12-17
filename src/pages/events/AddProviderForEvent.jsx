@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {  useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -88,7 +88,6 @@ const AddProviderForEvent = () => {
           },
         }
       );
-
     } catch (error) {
       console.error("Error fetching available providers:", error);
     }
@@ -104,7 +103,6 @@ const AddProviderForEvent = () => {
   };
   const removeProvider = async (providerId) => {
     try {
-      
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "Bạn có muốn xóa nhà cung cấp nhà.Lưu ý : thao tác không thể hoàn lại",
@@ -115,18 +113,20 @@ const AddProviderForEvent = () => {
         confirmButtonText: "Yes !",
         cancelButtonText: "No, cancel!",
         showClass: {
-          popup: "animate__animated animate__fadeInDown" 
+          popup: "animate__animated animate__fadeInDown",
         },
         hideClass: {
-          popup: "animate__animated animate__fadeOutUp" 
+          popup: "animate__animated animate__fadeOutUp",
         },
       });
-  
-     
+
       if (result.isConfirmed) {
-        
         await deleteProviderEvent(eventId, providerId);
-        Swal.fire("Deleted!", "Nhà cung cấp đã được xóa khỏi sự kiện", "success");
+        Swal.fire(
+          "Deleted!",
+          "Nhà cung cấp đã được xóa khỏi sự kiện",
+          "success"
+        );
         fetchProviders();
       } else {
         Swal.fire("Cancelled", "Đã hủy thao tác.", "info");
@@ -161,7 +161,7 @@ const AddProviderForEvent = () => {
           maxHeight: 45,
           "&:hover": { backgroundColor: "#1565c0" },
           marginBottom: "20px",
-          marginTop:'20px'
+          marginTop: "20px",
         }}
       >
         Thêm nhà cung cấp dịch vụ
@@ -188,17 +188,27 @@ const AddProviderForEvent = () => {
               },
             }}
           >
-            <CardContent 
-            >
+            <CardContent>
               <Typography
                 variant="h6"
-                sx={{ fontSize: "22px", fontWeight: "bold" ,  lineHeight: "1.5", textAlign: "center", width: "100%",}}
+                sx={{
+                  fontSize: "22px",
+                  fontWeight: "bold",
+                  lineHeight: "1.5",
+                  textAlign: "center",
+                  width: "100%",
+                }}
               >
                 {provider.name}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ fontSize: "13px", display: "flex", alignItems: "center", lineHeight: "1.5", }}
+                sx={{
+                  fontSize: "13px",
+                  display: "flex",
+                  alignItems: "center",
+                  lineHeight: "1.5",
+                }}
               >
                 <PersonOutline
                   sx={{
@@ -212,7 +222,12 @@ const AddProviderForEvent = () => {
               </Typography>
               <Typography
                 variant="body2"
-                sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.5", }}
+                sx={{
+                  fontSize: "13px",
+                  display: "flex",
+                  alignItems: "center",
+                  lineHeight: "1.5",
+                }}
               >
                 <EmailOutlined
                   sx={{
@@ -226,7 +241,12 @@ const AddProviderForEvent = () => {
               </Typography>
               <Typography
                 variant="body2"
-                sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.5", }}
+                sx={{
+                  fontSize: "13px",
+                  display: "flex",
+                  alignItems: "center",
+                  lineHeight: "1.5",
+                }}
               >
                 <PhoneOutlined
                   sx={{
@@ -240,7 +260,12 @@ const AddProviderForEvent = () => {
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ fontSize: "13px", display: "flex", alignItems: "center", lineHeight: "1.5", }}
+                sx={{
+                  fontSize: "13px",
+                  display: "flex",
+                  alignItems: "center",
+                  lineHeight: "1.5",
+                }}
               >
                 <LocationOnOutlined
                   sx={{
@@ -254,7 +279,12 @@ const AddProviderForEvent = () => {
               </Typography>
               <Typography
                 variant="body2"
-                sx={{  fontSize: "13px",display: "flex", alignItems: "center", lineHeight: "1.5", }}
+                sx={{
+                  fontSize: "13px",
+                  display: "flex",
+                  alignItems: "center",
+                  lineHeight: "1.5",
+                }}
               >
                 <LanguageOutlined
                   sx={{
@@ -312,11 +342,11 @@ const AddProviderForEvent = () => {
         }}
         fullWidth
       >
-        <DialogTitle 
+        <DialogTitle
           sx={{
             textAlign: "center",
-            fontSize: "24px",    
-            fontWeight: "bold", 
+            fontSize: "24px",
+            fontWeight: "bold",
           }}
         >
           Chọn nhà cung cấp
@@ -347,18 +377,18 @@ const AddProviderForEvent = () => {
         sx={{ "& .MuiDialog-paper": { width: "900px", maxWidth: "none" } }}
         fullWidth
       >
-                <DialogTitle 
+        <DialogTitle
           sx={{
             textAlign: "center",
-            fontSize: "24px",    
-            fontWeight: "bold", 
+            fontSize: "24px",
+            fontWeight: "bold",
           }}
         >
           Các dịch vụ đã thuê
         </DialogTitle>
         <DialogContent>
           {selectedProvider && (
-            <ViewService eventid={eventId} providerid={selectedProvider.id} />
+            <ViewService eventid={eventId} providerid={selectedProvider.id} onClose={handleDialogDetailClose}/>
           )}
         </DialogContent>
         <DialogActions>
@@ -367,7 +397,7 @@ const AddProviderForEvent = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>  
+    </Box>
   );
 };
 
