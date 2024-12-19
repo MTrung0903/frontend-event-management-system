@@ -31,7 +31,8 @@ import SpeakerList from './pages/speakers/SpeakerList';
 import SpeakerAdd from './pages/speakers/SpeakerAdd';
 import SpeakerDetail from './pages/speakers/SpeakerDetail';
 import MCList from './pages/mcs/MCList';
-import MCAdd from './pages/mcs/MCAdd'
+import MCAdd from './pages/mcs/MCAdd';
+import McDetail from "./pages/mcs/MCDetail";
 import TeamList from './pages/teams/TeamList';
 
 import AddTeamForEvent from "./pages/events/AddTeamForEvent";
@@ -173,6 +174,7 @@ function App() {
                           <Route path="/speakers/:speakerId/detail" element={<SpeakerDetail />} />
                           <Route path="/mcs" element={<MCList />} />
                           <Route path="/mcs/addMc" element={<MCAdd />} />
+                          <Route path="/mcs/:mcId/detail" element={<McDetail />} />
                           <Route path="/events/:eventId/team-detail" element={<TeamList />} />
                           <Route path="/tasks" element={<TaskList />} />
                           <Route path="/tasks/add" element={<TaskAdd />} />

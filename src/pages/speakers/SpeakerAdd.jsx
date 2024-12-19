@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 
 
-const SpeakerAdd = () => {
+const SpeakerAdd = ({onAdd}) => {
   const [open, setOpen] = useState(false); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,7 +35,7 @@ const SpeakerAdd = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
 
-  // Mở/đóng popup chính
+ 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleImageChange = (event) => {
@@ -91,12 +91,15 @@ const SpeakerAdd = () => {
         }
       );
       console.log("API Response:", response);
+      
       Swal.fire({
         title: "Save",
         text: "Thêm diễn giả thành công",
         icon: "success",
         confirmButtonText: "OK"
       });
+      handleClose();
+
       setName("");
       setEmail("");
       setTitle("");
@@ -105,6 +108,9 @@ const SpeakerAdd = () => {
       setDescription("");
       setImage(null);
       setImagePreview(null);
+      
+      onAdd();  // Call onAdd to fetch the updated speaker list
+      
     } catch (error) {
       console.error("Lỗi khi thêm diễn giả:", error);
       Swal.fire({
@@ -116,10 +122,9 @@ const SpeakerAdd = () => {
     } finally {
       setLoading(false);
     }
-  };
-  const onBack = async () => {
-    navigate(`/speakers`);
-  };
+};
+
+
 
 
   return (

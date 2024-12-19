@@ -81,7 +81,58 @@ const SponsorCard = ({ sponsor, onDelete }) => {
     </Card>
   );
 };
+const SponsorList = ({ sponsor }) => {
+  const [imageUrl, setImageUrl] = useState("");
+  const [loadingImage, setLoadingImage] = useState(true);
+  const fetchImage = async (sponsorLogo) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/file/${sponsor.sponsorLogo}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+          responseType: "blob",
+        }
+      );
+      const url = URL.createObjectURL(response.data);
+      setImageUrl(url);
+    } catch (error) {
+      console.error("Error loading image:", error);
+    } finally {
+      setLoadingImage(false);
+    }
+  };
+  useEffect(() => {
+    if (sponsor.sponsorLogo) {
+      setLoadingImage(true);
+      fetchImage(sponsor.sponsorLogo);
+    }
+  }, [sponsor.sponsorLogo]);
 
+  return (
+    <Card>
+      {loadingImage ? (
+        <CircularProgress />
+      ) : (
+        <CardMedia
+          component="img"
+          height="140"
+          image={imageUrl}
+          alt={sponsor.name}
+        />
+      )}
+      <CardContent>
+        <Typography variant="h6">{sponsor.name}</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Sponsorship Level: {sponsor.sponsorshipLevel}
+        </Typography>
+
+       
+      </CardContent>
+    </Card>
+  );
+};
 const SponsorForEvent = () => {
   const [sponsors, setSponsors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -256,6 +307,7 @@ const SponsorForEvent = () => {
         onClose={() => setOpenAddDialog(false)}
         fullWidth
         maxWidth="md"
+        style={{zIndex:1200}}
       >
         <DialogTitle>Thêm nhà tài trợ cho sự kiện</DialogTitle>
         <DialogContent>
@@ -287,7 +339,7 @@ const SponsorForEvent = () => {
                       <CircularProgress />
                     </Box>
                   )}
-                  <SponsorCard sponsor={sponsor} />
+                  <SponsorList sponsor={sponsor} />
                 </Card>
               </Grid>
             ))}

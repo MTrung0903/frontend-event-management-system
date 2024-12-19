@@ -152,7 +152,7 @@ const ProviderTabs = ({ onClose, onProviderAdded }) => {
       }
       Swal.fire({
         title: "Save",
-        text: "Thêm thành côngcông",
+        text: "Thêm thành công",
         icon: "success",
         confirmButtonText: "OK",
         showClass: {

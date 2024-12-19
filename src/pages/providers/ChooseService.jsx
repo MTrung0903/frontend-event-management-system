@@ -24,7 +24,6 @@ const CustomCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   backgroundColor: "#f5f5f5",
 }));
-
 const fetchProviderInEvent = async (eventId, providerId) => {
   const response = await axios.get(
     `http://localhost:8080/man/event/${eventId}/detail-ser/${providerId}`,
@@ -36,7 +35,6 @@ const fetchProviderInEvent = async (eventId, providerId) => {
   );
   return response.data.data;
 };
-
 const fetchRentalService = async (eventId, serviceId) => {
   const response = await axios.get(
     `http://localhost:8080/man/proService/${eventId}/detail-ser/${serviceId}`,
@@ -48,7 +46,6 @@ const fetchRentalService = async (eventId, serviceId) => {
   );
   return response.data.data;
 };
-
 const deleteServiceRental = async (eventId, serviceId) => {
   await axios.delete(
     `http://localhost:8080/man/event/${eventId}/del-ser/${serviceId}`,
@@ -60,47 +57,58 @@ const deleteServiceRental = async (eventId, serviceId) => {
   );
 };
 const formatDateTime = (date) => format(new Date(date), "yyyy-MM-dd HH:mm:ss");
-const updateServiceRental = async (eventId, service) => {
-  try {
-    const formattedService = {
-      ...service,
-      serviceId: service.serviceId, 
-      rentalDate: formatDateTime(service.rentalDate),
-      expDate: formatDateTime(service.expDate),
-    };
-    const response = await axios.put(
-      `http://localhost:8080/man/event/${eventId}/update-ser-rental`,
-      formattedService,
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      }
-    );
-    console.log("Cập nhật thành công:", response.data);
-  } catch (error) {
-    console.error("Lỗi khi cập nhật dịch vụ:", error.response || error.message);
-  }
-};
 
-const style = document.createElement("style");
-style.textContent = `
-  .swal2-popup {
-    z-index: 9999 !important;
-  }
-  .swal2-overlay {
-    z-index: 9998 !important;
-  }
-`;
-document.head.appendChild(style);
 
-const ViewService = ({ eventid, providerid }) => {
+
+const ViewService = ({ eventid, providerid ,onClose}) => {
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rentalData, setRentalData] = useState({});
   const [editableServiceId, setEditableServiceId] = useState(null);
-
+  const updateServiceRental = async (eventId, service) => {
+    try {
+      const formattedService = {
+        ...service,
+        rentalDate: formatDateTime(service.rentalDate),
+        expDate: formatDateTime(service.expDate),
+      };
+  
+      if (new Date(formattedService.expDate) < new Date(formattedService.rentalDate)) {
+        
+        Swal.fire({
+          title: "Error",
+          text: "Ngày hết hạn không thể trước ngày thuê.",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
+        onClose()
+        return;
+      }
+  
+      const response = await axios.put(
+        `http://localhost:8080/man/event/${eventId}/update-ser-rental`,
+        formattedService,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+  
+      console.log("Cập nhật thành công:", response.data);
+      onClose()
+      Swal.fire({
+        title: "Success",
+        text: "Cập nhật dịch vụ thành công.",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
+  
+    } catch (error) {
+      console.error("Lỗi khi cập nhật dịch vụ:", error.response || error.message);
+    }
+  };
   const handleDateChange = (e, serviceId, dateType) => {
     setRentalData((prev) => ({
       ...prev,
@@ -126,16 +134,14 @@ const ViewService = ({ eventid, providerid }) => {
     const updatedService = {
       ...service,
       ...rentalData[serviceId],
-      serviceId: serviceId, // Đảm bảo có trường serviceId
+      serviceId: serviceId, 
       eventId: eventid,
     };
   
     await updateServiceRental(eventid, updatedService);
     setEditableServiceId(null);
   };
-  
-  
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -184,105 +190,104 @@ const ViewService = ({ eventid, providerid }) => {
   }
 
   return (
-<Container>
+    <>
       {provider?.listProviderServices?.length ? (
         <Grid container spacing={3}>
-{provider.listProviderServices.map((service) => (
-  <Grid item xs={12} sm={6} md={6} key={service.id}>
-    <CustomCard>
-      <CardContent>
-        <Typography variant="h5" textAlign="center" sx={{ marginBottom: 2, fontWeight: 'bold' }}>
-          {service.serviceName}
-        </Typography>
-        <div style={{ display: "flex", marginBottom: "15px" }}>
-          <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Loại:</strong>
-          <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
-            {service.serviceType}
-          </Typography>
-        </div>
-        <div style={{ display: "flex", marginBottom: "15px" }}>
-          <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Giá:</strong>
-          <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
-            {parseInt(service.price).toLocaleString("vi-VN") + " vnđ"}
-          </Typography>
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            Ngày thuê:
-          </Typography>
-          <input
-            type="datetime-local"
-            value={rentalData[service.id]?.rentalDate || ""}
-            onChange={(e) => handleDateChange(e, service.id, "rentalDate")}
-            disabled={editableServiceId !== service.id}
-            style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #ccc',
-              fontSize: '14px',
-            }}
-          />
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-            Ngày hết hạn:
-          </Typography>
-          <input
-            type="datetime-local"
-            value={rentalData[service.id]?.expDate || ""}
-            onChange={(e) => handleDateChange(e, service.id, "expDate")}
-            disabled={editableServiceId !== service.id}
-            style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #ccc',
-              fontSize: '14px',
-            }}
-          />
-        </div>
-        {editableServiceId === service.id ? (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-            <Button
-              onClick={() => handleUpdate(service, service.id)}
-              variant="contained"
-              color="primary"
-              sx={{ padding: '8px 16px' }}
-            >
-              Lưu
-            </Button>
-            <Button
-              onClick={() => setEditableServiceId(null)}
-              variant="outlined"
-              color="secondary"
-              sx={{ padding: '8px 16px' }}
-            >
-              Hủy
-            </Button>
-          </Box>
-        ) : (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-            <IconButton onClick={() => setEditableServiceId(service.id)} color="primary">
-              <EditOutlinedIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDelete(service.id)} color="error">
-              <DeleteOutlineOutlinedIcon />
-            </IconButton>
-          </Box>
-        )}
-      </CardContent>
-    </CustomCard>
-  </Grid>
-))}
-
+          {provider.listProviderServices.map((service) => (
+            <Grid item xs={12} sm={6} md={6} key={service.id}>
+              <CustomCard>
+                <CardContent>
+                  <Typography variant="h5" textAlign="center" sx={{ marginBottom: 2, fontWeight: 'bold' }}>
+                    {service.serviceName}
+                  </Typography>
+                  <div style={{ display: "flex", marginBottom: "15px" }}>
+                    <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Loại:</strong>
+                    <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
+                      {service.serviceType}
+                    </Typography>
+                  </div>
+                  <div style={{ display: "flex", marginBottom: "15px" }}>
+                    <strong style={{ width: "35%", flexShrink: 0, color: "#34495e" }}>Giá:</strong>
+                    <Typography variant="body2" sx={{ color: "#7f8c8d", fontSize: "14px" }}>
+                      {parseInt(service.price).toLocaleString("vi-VN") + " vnđ"}
+                    </Typography>
+                  </div>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      Ngày thuê:
+                    </Typography>
+                    <input
+                      type="datetime-local"
+                      value={rentalData[service.id]?.rentalDate || ""}
+                      onChange={(e) => handleDateChange(e, service.id, "rentalDate")}
+                      disabled={editableServiceId !== service.id}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        fontSize: '14px',
+                      }}
+                    />
+                  </div>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                      Ngày hết hạn:
+                    </Typography>
+                    <input
+                      type="datetime-local"
+                      value={rentalData[service.id]?.expDate || ""}
+                      onChange={(e) => handleDateChange(e, service.id, "expDate")}
+                      disabled={editableServiceId !== service.id}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        fontSize: '14px',
+                      }}
+                    />
+                  </div>
+                  {editableServiceId === service.id ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                      <Button
+                        onClick={() => handleUpdate(service, service.id)}
+                        variant="contained"
+                        color="primary"
+                        sx={{ padding: '8px 16px' }}
+                      >
+                        Lưu
+                      </Button>
+                      <Button
+                        onClick={() => setEditableServiceId(null)}
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ padding: '8px 16px' }}
+                      >
+                        Hủy
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                      <IconButton onClick={() => setEditableServiceId(service.id)} color="primary">
+                        <EditOutlinedIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(service.id)} color="error">
+                        <DeleteOutlineOutlinedIcon />
+                      </IconButton>
+                    </Box>
+                  )}
+                </CardContent>
+              </CustomCard>
+            </Grid>
+          ))}
         </Grid>
       ) : (
         <Typography textAlign="center" variant="body1" sx={{ marginTop: 2 }}>
           Không có dịch vụ nào.
         </Typography>
       )}
-    </Container>
+  </>
   );
 };
 

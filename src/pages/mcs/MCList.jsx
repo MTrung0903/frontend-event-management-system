@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, CircularProgress, Grid, Card, CardContent, Typography, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 import EmailOutlined from "@mui/icons-material/EmailOutlined";
@@ -10,6 +10,7 @@ import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import DescriptionOutlined from "@mui/icons-material/DescriptionOutlined";
 import McAdd from "./MCAdd"
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import Swal from "sweetalert2";
 export const deleteMc = async (mcId) => {
   try {
     const response = await axios.delete(
@@ -87,12 +88,42 @@ const McList = () => {
   };
   const handleDeleteMc = async (mcId) => {
     try {
-      console.log(`Attempting to delete MC with ID: ${mcId}`); // Debug log
-      await deleteMc(mcId);
-      console.log(`Successfully deleted MC with ID: ${mcId}`); // Debug log
-      setMcList((prevList) => prevList.filter(mc => mc.mcID !== mcId)); // Cập nhật lại danh sách
+      
+      const result = await Swal.fire({
+        title: "Xác nhận xóa",
+        text: "Bạn có chắc chắn muốn xóa diễn giả này không? Hành động này không thể hoàn tác!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Xóa",
+        cancelButtonText: "Hủy",
+      });
+  
+      if (result.isConfirmed) {
+       
+        console.log(`Attempting to delete MC with ID: ${mcId}`);
+        await deleteMc(mcId);
+        console.log(`Successfully deleted MC with ID: ${mcId}`);
+        setMcList((prevList) => prevList.filter((mc) => mc.mcID !== mcId));
+  
+       
+        Swal.fire({
+          title: "Đã xóa!",
+          text: "Diễn giả đã được xóa thành công.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
     } catch (error) {
       console.error("Error deleting MC:", error);
+     
+      Swal.fire({
+        title: "Lỗi",
+        text: "Đã xảy ra lỗi khi xóa diễn giả. Vui lòng thử lại sau.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
   return (
@@ -116,12 +147,12 @@ const McList = () => {
           {mcList.map((mc) => (
             <Grid item xs={12} sm={6} md={4} key={mc.mcID}>
               <Card sx={{
-                minHeight: '300px',
+                minHeight: '320px',
                 maxHeight: '500px',
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between", // Nội dung cách đều trên-dưới
-                overflow: "hidden", // Ẩn nội dung thừa
+                justifyContent: "space-between", 
+                overflow: "hidden",
               }}
               >
                 <Box sx={{ position: "relative" }}>
@@ -197,6 +228,14 @@ const McList = () => {
                       </Typography>
                     </Box>
                   </CardContent>
+                </Box>
+                 {/* Preview Button */}
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 1 }}>
+                    <Link to={`/mcs/${mc.mcID}/detail`} style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined" size="small">
+                            Chi tiết
+                        </Button>
+                    </Link>
                 </Box>
               </Card>
             </Grid>
