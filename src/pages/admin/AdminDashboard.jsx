@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Box, Grid, Typography, Paper, Card, CardContent } from "@mui/material";
+import { Box, Grid, Typography, Paper, Card, CardContent, Select, MenuItem} from "@mui/material";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import EventTable from "./EventTable";
@@ -8,7 +8,7 @@ import axios from "axios";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 
-const AdminDashboard = ({ setSelectedEvent }) => { 
+const AdminDashboard = ({ setSelectedEvent }) => {
   const [eventTotal, setEventTotal] = useState(0);
   const [device, setDevice] = useState(0);
   const [employee, setEmployee] = useState(0);
@@ -16,31 +16,38 @@ const AdminDashboard = ({ setSelectedEvent }) => {
   const [eventIncoming, setEventIncoming] = useState(null);
   const [sponsor, setSponsor] = useState(null);
   const [events, setEvent] = useState(null);
-  const fetchAPI = async () => {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const fetchAPI = async (year) => {
     try {
-        const response = await axios.get("http://localhost:8080/admin/events/overview", {
-            headers: {
-                Authorization: localStorage.getItem("token"),
-            },
-        });
-        const data = response.data.data;
-        setEventTotal(data.totalEvents);
-        setDevice(data.totalDevices);
-        setEmployee(data.totalEmployees);
-        setEventCompleted(data.cntCompleted);
-        setEventIncoming(data.cntIncoming);
-        setSponsor(data.cntSponsor);
-        setEvent(data.listEvent);
-        //console.log(response.data.data)
-        
-        //console.log("Data for dropdown:", sponsorshipLevels);
+      const response = await axios.get(`http://localhost:8080/admin/events/overview?year=${year}`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      const data = response.data.data;
+      setEventTotal(data.totalEvents);
+      setDevice(data.totalDevices);
+      setEmployee(data.totalEmployees);
+      setEventCompleted(data.cntCompleted);
+      setEventIncoming(data.cntIncoming);
+      setSponsor(data.cntSponsor);
+      setEvent(data.listEvent);
+      //console.log(response.data.data)
+
+      //console.log("Data for dropdown:", sponsorshipLevels);
     } catch (error) {
-        console.error("Error fetching sponsorship levels:", error);
+      console.error("Error fetching sponsorship levels:", error);
     }
   };
   useEffect(() => {
-    fetchAPI();
+    fetchAPI(selectedYear);
   }, []);
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+  };
+  useEffect(() => {
+    fetchAPI(selectedYear);
+  }, [selectedYear]);
   const eventData = {
     labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"],
     datasets: [
@@ -70,6 +77,8 @@ const AdminDashboard = ({ setSelectedEvent }) => {
 
   return (
     <Box p={1}>
+      
+
       <Typography variant="h4" gutterBottom>
         Báo cáo tổng quan
       </Typography>
@@ -95,7 +104,7 @@ const AdminDashboard = ({ setSelectedEvent }) => {
                 Số thiết bị đang sử dụng
               </Typography>
               <Typography variant="h3" color="secondary">
-               {device}
+                {device}
               </Typography>
             </Box>
           </Paper>
@@ -114,8 +123,19 @@ const AdminDashboard = ({ setSelectedEvent }) => {
         </Grid>
       </Grid>
 
+      <Box sx={{ mb: 1 }} display={"flex"}  alignItems={"center"}>
+        <Typography variant="h6">Năm:</Typography>
+        <Select value={selectedYear} onChange={handleYearChange} sx= {{maxHeight: 25, marginLeft: 2}}>
+          {[2020, 2021, 2022, 2023, 2024].map((year) => (
+            <MenuItem key={year} value={year}>
+              {year}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
       {/* Biểu đồ phân tích */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
+        
         <Grid item xs={12} sm={6}>
           <Card>
             <CardContent>
