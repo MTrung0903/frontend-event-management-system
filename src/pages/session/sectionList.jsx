@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CloseIcon from '@mui/icons-material/Close'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import Swal from "sweetalert2";
 const SectionList = () => {
     const { eventId } = useParams();
     const [sections, setSection] = useState([]);
@@ -82,7 +83,13 @@ const SectionList = () => {
             await axios.delete(`http://localhost:8080/man/section/${selectedSection.sectionId}`, {
                 headers: { Authorization: localStorage.getItem("token") },
             });
-            alert("Section deleted successfully");
+            Swal.fire({
+                title: "Thông báo",
+                text: "Xóa thành công",
+                icon: "success",
+                confirmButtonText: "OK",
+                
+              });
             setSection((prev) => prev.filter((s) => s.sectionId !== selectedSection.sectionId));
             setFilteredSections((prev) => prev.filter((s) => s.sectionId !== selectedSection.sectionId));
         } catch (error) {

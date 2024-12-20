@@ -17,6 +17,7 @@ import {
     Input,
     IconButton,
 } from "@mui/material";
+import Swal from "sweetalert2";
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import axios from "axios";
 import SpeakerAdd from './AddSpeakerForm';
@@ -65,12 +66,43 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
     // Gửi form lên server
     const handleSubmit = async () => {
         if (!formData.sectionTitle || !formData.speakerId) {
-            alert("Vui lòng điền đầy đủ thông tin.");
+            Swal.fire({
+                title: "Thông báo",
+                text: "Vui lòng điền đầy đủ thông tin.",
+                icon: "warning",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+                  },
+                  didOpen: () => {
+                    // Áp dụng trực tiếp CSS qua script khi Swal mở
+                    const swalPopup = document.querySelector('.swal-popup-inline');
+                    swalPopup.style.zIndex = 9999;
+                    swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+                  }
+
+            });
             return;
         }
 
-        if (!file){
-            alert("Chưa có file tàil iệu.");
+        if (!file) {
+            
+            Swal.fire({
+                title: "Thông báo",
+                text: "Chưa có file tàil iệu.",
+                icon: "warning",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+                  },
+                  didOpen: () => {
+                    // Áp dụng trực tiếp CSS qua script khi Swal mở
+                    const swalPopup = document.querySelector('.swal-popup-inline');
+                    swalPopup.style.zIndex = 9999;
+                    swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+                  }
+            });
+            return;
         }
         const convertTo24HourFormat = (time, period) => {
             let [hour, minute] = time.split(":").map(Number);
@@ -83,7 +115,23 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
         const endTimeInMinutes = convertTo24HourFormat(formData.endTime, formData.endPeriod);
 
         if (endTimeInMinutes <= startTimeInMinutes) {
-            alert("Thời gian kết thúc phải muộn hơn thời gian bắt đầu.");
+           
+            Swal.fire({
+                title: "Thông báo",
+                text: "Thời gian kết thúc phải muộn hơn thời gian bắt đầu.",
+                icon: "warning",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+                  },
+                  didOpen: () => {
+                    // Áp dụng trực tiếp CSS qua script khi Swal mở
+                    const swalPopup = document.querySelector('.swal-popup-inline');
+                    swalPopup.style.zIndex = 9999;
+                    swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+                  }
+
+            });
             return;
         }
 
@@ -105,6 +153,14 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
                     headers: { Authorization: localStorage.getItem("token") },
                     "Content-Type": "multipart/form-data" // Đảm bảo header đúng cho gửi file
                 });
+                Swal.fire({
+                    title: "Thông báo",
+                    text: "Cập nhật thành công",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                    
+    
+                });
             } else {
                 response = await axios.post("http://localhost:8080/man/section", formDataToSend, {
                     headers: {
@@ -113,12 +169,32 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
                     },
                 });
                 onAdd(response.data.data)
+                Swal.fire({
+                    title: "Thông báo",
+                    text: "Thêm thành công",
+                    icon: "success",
+                    confirmButtonText: "OK",
+    
+                });
             }
-            alert("Section saved successfully!");
             handleClose();
         } catch (error) {
             console.error("Error saving section:", error);
-            alert("Failed to save section. Please try again later.");
+            Swal.fire({
+                title: "Thông báo",
+                text: "Thực hiện thất bại",
+                icon: "error",
+                confirmButtonText: "OK",
+                customClass: {
+                    popup: 'swal-popup-inline',  // Tên class tùy chỉnh
+                  },
+                  didOpen: () => {
+                    // Áp dụng trực tiếp CSS qua script khi Swal mở
+                    const swalPopup = document.querySelector('.swal-popup-inline');
+                    swalPopup.style.zIndex = 9999;
+                    swalPopup.style.backgroundColor = '#f0f0f0';  // Thêm màu nền ví dụ
+                  }
+            });
         }
     };
 
@@ -144,11 +220,14 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
             });
 
             const sectionData = response.data.data;
-
+            console.log(sectionData);
             if (sectionData) {
                 // Chuyển đổi thời gian từ "HH:mm:ss" thành "HH:mm"
                 const formatTime = (time) => {
                     const [hours, minutes] = time.split(':');
+                    if (hours >= 12) {
+                        return `${hours - 12}:${minutes}`;
+                    }
                     return `${hours}:${minutes}`;
                 };
 
@@ -209,7 +288,7 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
         }
     };
 
-    
+
     const handleRemoveFile = () => {
         setFile(null);  // Xóa file
     };
@@ -229,7 +308,7 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
             </Button>
 
             {/* Popup chính */}
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={handleClose} sx={{ zIndex: 999 }}>
                 <DialogTitle sx={{ color: "#4c4c4c", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>Section Details</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={3}>
@@ -261,7 +340,7 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
                         <Grid item xs={3}>
                             <FormControl fullWidth>
                                 <Typography variant="h6" sx={{ color: "#9b9b9b" }}>
-                                Thời gian kết thúc
+                                    Thời gian kết thúc
                                     <span style={{ color: "red", marginLeft: 1 }}>*</span>
                                 </Typography>
                                 <Select name="endTime" value={formData.endTime} onChange={handleChange} sx={{ marginTop: 1 }}>
@@ -275,7 +354,7 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
                         <Grid item xs={3}>
                             <FormControl fullWidth>
                                 <Typography variant="h6" sx={{ color: "#9b9b9b", visibility: "hidden" }}>End period</Typography>
-                                <Select name="endPeriod" value={formData.startPeriod} onChange={handleChange} sx={{ marginTop: 1 }}>
+                                <Select name="endPeriod" value={formData.endPeriod} onChange={handleChange} sx={{ marginTop: 1 }}>
                                     <MenuItem value="AM">AM</MenuItem>
                                     <MenuItem value="PM">PM</MenuItem>
                                 </Select>
@@ -362,18 +441,18 @@ const AddSectionForm = ({ id, onAdd, openEdit, onClose }) => {
                             {/* Các trường khác trong form */}
                             <Grid item xs={12}>
                                 <Typography variant="h6" sx={{ color: "#9b9b9b", marginBottom: 1 }}>
-                                    Upload file 
+                                    Upload file
                                 </Typography>
 
                                 {/* Hiển thị nút "Choose File" khi chưa chọn file */}
                                 {!file && (
                                     <label htmlFor="file-upload">
                                         <Input
-                                            type="file"                                            
+                                            type="file"
                                             id="file-upload"
                                             inputProps={{ accept: ".pdf, .docx, .pptx, .ppt, .doc" }}
                                             onChange={handleFileChange}
-                                            sx={{ display: "none",  }}  // Ẩn Input, chỉ hiển thị dưới dạng button
+                                            sx={{ display: "none", }}  // Ẩn Input, chỉ hiển thị dưới dạng button
                                         />
                                         <Button variant="contained" component="span" sx={{ backgroundColor: "#109c7b" }}>
                                             Chọn file

@@ -193,7 +193,7 @@ const AdminUserManagement = () => {
   };
 
   const handleSaveManager = async () => {
-    if (!currentUser?.name || !currentUser?.email || !currentUser?.phone || !currentUser?.manID) {
+    if (!currentUser?.name || !currentUser?.email || !currentUser?.phone) {
       Swal.fire({
         title: "Thông báo",
         text: "Vui lòng điền đầy đủ các trường.",
