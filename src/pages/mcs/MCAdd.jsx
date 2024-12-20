@@ -4,6 +4,7 @@ import axios from 'axios';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const McAdd = ({ closeDialog ,fetchMcList }) => {
   const [mcName, setMcName] = useState('');
@@ -52,7 +53,15 @@ const McAdd = ({ closeDialog ,fetchMcList }) => {
         },
       });
       console.log('API Response:', response);
-      alert('Thêm MC thành công!');
+      if(response.data.data === true){
+        Swal.fire({
+          title: "Thành công",
+          text: "Thêm MC thành công!",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
+
       closeDialog(); 
       fetchMcList(); 
     } catch (error) {

@@ -63,6 +63,7 @@ const SponsorDetail = () => {
           }
         );
         setLogoUrl(URL.createObjectURL(logoResponse.data));
+        
       }
       setLoading(false);
     } catch (err) {
@@ -129,13 +130,31 @@ const SponsorDetail = () => {
   // Gửi dữ liệu cập nhật qua API
   const handleFormSubmit = async () => {
     const formDataToSubmit = new FormData();
+
     if (logoFile) {
       formDataToSubmit.append("logo", logoFile); // Append new logo
     } else {
-      formDataToSubmit.append("logo", formData.sponsorLogo || ""); // Keep existing logo if no new one
+      try {
+      
+        console.log(sponsor.sponsorLogo)
+        const logoResponse =  await axios.get(`http://localhost:8080/file/${sponsor.sponsorLogo}`, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+          responseType: "blob",
+        });
+        console.log(logoResponse.data)
+        const imageBlob = new Blob([logoResponse.data], { type: logoResponse.data.type });
+        const imageUrl = URL.createObjectURL(imageBlob);
+        formDataToSubmit.append("logo", imageUrl);
+        console.log(formDataToSubmit.get("logo"))
+        console.log(imageUrl)
+      } catch (err) {
+        console.error("Error fetching image:", err);
+      }
     }
 
-    formDataToSubmit.append("id", sponsorId); // Đảm bảo truyền đúng id
+    formDataToSubmit.append("id", sponsorId); 
     formDataToSubmit.append("name", formData.name);
     formDataToSubmit.append("contact", formData.contact);
     formDataToSubmit.append("email", formData.email);
@@ -146,12 +165,23 @@ const SponsorDetail = () => {
     formDataToSubmit.append("sponsorshipLevel", formData.sponsorshipLevel);
 
     try {
-      await axios.put("http://localhost:8080/man/sponsor", formDataToSubmit, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      console.log("=== Sending Request ===");
+      const response = logoFile
+        ? await axios.put("http://localhost:8080/man/sponsor", formDataToSubmit, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: localStorage.getItem("token"),
+            },
+          })
+        : await axios.put("http://localhost:8080/man/sponsor/updateNoLogo", formDataToSubmit, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: localStorage.getItem("token"),
+            },
+          });
+
+      console.log("Response:", response.data);
+  
 
       setSponsor(formData);
       if (sponsorId) fetchSponsorDetail();

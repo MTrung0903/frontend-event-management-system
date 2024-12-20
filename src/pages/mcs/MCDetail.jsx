@@ -45,35 +45,37 @@ const McDetail = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [notification, setNotification] = useState({ open: false, message: "", severity: "info" });
 
-  useEffect(() => {
-    const fetchMcDetail = async () => {
-      try {
-        const response = await axiosInstance.get(`/${mcId}`);
-        const mcData = response.data.data;
 
-        setMc(mcData);
-        setFormData(mcData);
+  const fetchMcDetail = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/${mcId}`);
+      const mcData = response.data.data;
 
-        if (mcData.image) {
-          const imageResponse = await axios.get(
-            `http://localhost:8080/file/${mcData.image}`,
-            {
-              headers: {
-                Authorization: localStorage.getItem("token"),
-              },
-              responseType: "blob",
-            }
-          );
-          setImageUrl(URL.createObjectURL(imageResponse.data));
-        }
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching mc details:", err);
-        setError("Không thể tải thông tin diễn giả. Vui lòng thử lại sau.");
-        setLoading(false);
+      setMc(mcData);
+      setFormData(mcData);
+
+      if (mcData.image) {
+        const imageResponse = await axios.get(
+          `http://localhost:8080/file/${mcData.image}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+            responseType: "blob",
+          }
+        );
+        setImageUrl(URL.createObjectURL(imageResponse.data));
       }
-    };
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching mc details:", err);
+      setError("Không thể tải thông tin diễn giả. Vui lòng thử lại sau.");
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (mcId) fetchMcDetail();
   }, [mcId]);
 
@@ -109,50 +111,90 @@ const McDetail = () => {
     }
   };
 
+
+  
   const handleFormSubmit = async () => {
-    const formDataToSubmit = new FormData();
-
-    // Thêm hình ảnh nếu có thay đổi
-    if (selectedFile) {
-      formDataToSubmit.append("imageMc", selectedFile);
-    }
-
-    // Thêm các dữ liệu khác từ form
-    formDataToSubmit.append("id", mcId);
-    formDataToSubmit.append("mcName", formData.mcName);
-    formDataToSubmit.append("title", formData.title);
-    formDataToSubmit.append("email", formData.email);
-    formDataToSubmit.append("phone", formData.phone);
-    formDataToSubmit.append("address", formData.address);
-    formDataToSubmit.append("description", formData.description);
-
-    try {
-      await axios.put("http://localhost:8080/man/mc", formDataToSubmit, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-
-      setMc(formData);
-      setIsEditOpen(false);
-
-      Swal.fire({
-        title: "Thành công",
-        text: "Cập nhật diễn giả thành công!",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-    } catch (err) {
-      console.error("Error updating mc:", err);
-      Swal.fire({
-        title: "Thất bại",
-        text: "Cập nhật diễn giả thất bại. Vui lòng thử lại!",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
+      const formDataToSubmit = new FormData();
+  
+      console.log("=== Debugging Form Submission ===");
+  
+      // Check if selectedFile exists
+      if (selectedFile) {
+        formDataToSubmit.append("imageMc", selectedFile);
+      } else {
+        try {
+          // Fetch hình ảnh từ API nếu selectedFile không tồn tại
+          const imageResponse = await axios.get(`http://localhost:8080/file/${mc.image}`, {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+            responseType: "blob",
+          });
+  
+          const imageBlob = new Blob([imageResponse.data], { type: imageResponse.data.type });
+          const imageUrl = URL.createObjectURL(imageBlob);
+          formDataToSubmit.append("imageMc", imageUrl); // Append imageUrl cho updateNoImage
+        } catch (err) {
+          console.error("Error fetching image:", err);
+        }
+      }
+  
+      // Append other form data
+      formDataToSubmit.append("mcID", mcId || "");
+      formDataToSubmit.append("mcName", formData.mcName || "");
+      formDataToSubmit.append("title", formData.title || "");
+      formDataToSubmit.append("email", formData.email || "");
+      formDataToSubmit.append("phone", formData.phone || "");
+      formDataToSubmit.append("address", formData.address || "");
+      formDataToSubmit.append("description", formData.description || "");
+  
+      // Log formDataToSubmit content
+      console.log("=== FormDataToSubmit Content ===");
+      for (const [key, value] of formDataToSubmit.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+  
+      try {
+        console.log("=== Sending Request ===");
+        const response = selectedFile
+          ? await axios.put("http://localhost:8080/man/mc", formDataToSubmit, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: localStorage.getItem("token"),
+              },
+            })
+          : await axios.put("http://localhost:8080/man/mc/updateNoImage", formDataToSubmit, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: localStorage.getItem("token"),
+              },
+            });
+  
+        console.log("Response:", response.data);
+  
+        setMc(formData); // Cập nhật dữ liệu hiển thị
+        setIsEditOpen(false); // Đóng form
+  
+        Swal.fire({
+          title: "Thành công",
+          text: "Cập nhật diễn giả thành công!",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+        await fetchMcDetail()
+      } catch (err) {
+        console.error("Error updating mc:", err);
+  
+        Swal.fire({
+          title: "Thất bại",
+          text: "Cập nhật diễn giả thất bại. Vui lòng thử lại!",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
   };
+  
+  
 
   const closeNotification = () => setNotification({ ...notification, open: false });
 
