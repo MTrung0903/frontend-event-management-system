@@ -21,26 +21,26 @@ const EventList = ({ setSelectedEvent }) => {
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
-        applyFilters(value, filterStatus); // Áp dụng bộ lọc mới
+        applyFilters(value, filterStatus); 
     };
 
     const handleStatusChange = (e) => {
         const status = e.target.value;
         setFilterStatus(status);
-        applyFilters(searchTerm, status); // Áp dụng bộ lọc mới
+        applyFilters(searchTerm, status); 
     };
 
     const applyFilters = (term, status) => {
         let filtered = events;
 
-        // Lọc theo search term
+        
         if (term) {
             filtered = filtered.filter((event) =>
                 event.eventName.toLowerCase().includes(term.toLowerCase())
             );
         }
 
-        // Lọc theo trạng thái
+        
         if (status !== "All") {
             filtered = filtered.filter((event) => event.eventStatus === status);
         }
